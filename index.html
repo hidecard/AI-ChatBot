@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YHA - Ai </title>
+    <title>YHA - Ai</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Fonts -->
@@ -503,6 +503,68 @@
             opacity: 1;
         }
 
+        /* Markdown Styling */
+        .message-content h1, .message-content h2, .message-content h3 {
+            margin: 0.5rem 0;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .dark-mode .message-content h1, .dark-mode .message-content h2, .dark-mode .message-content h3 {
+            color: var(--dark-text);
+        }
+
+        .message-content h1 {
+            font-size: 1.5rem;
+        }
+
+        .message-content h2 {
+            font-size: 1.25rem;
+        }
+
+        .message-content h3 {
+            font-size: 1.1rem;
+        }
+
+        .message-content p {
+            margin: 0.5rem 0;
+        }
+
+        .message-content ul, .message-content ol {
+            margin: 0.5rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .message-content li {
+            margin-bottom: 0.25rem;
+        }
+
+        .message-content a {
+            color: var(--primary-color);
+            text-decoration: underline;
+            transition: color 0.2s;
+        }
+
+        .message-content a:hover {
+            color: #ea580c;
+        }
+
+        .dark-mode .message-content a {
+            color: var(--accent-color);
+        }
+
+        .dark-mode .message-content a:hover {
+            color: #f97316;
+        }
+
+        .message-content strong {
+            font-weight: 700;
+        }
+
+        .message-content em {
+            font-style: italic;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-300px);
@@ -657,11 +719,52 @@
         }
 
         function formatMessage(content) {
+            // Escape HTML to prevent XSS
+            let escapedContent = content.replace(/&/g, "&").replace(/</g, "<").replace(/>/g, ">");
+
+            // Handle code blocks
             const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
-            return content.replace(codeBlockRegex, (match, lang, code) => {
-                const encodedCode = code.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            escapedContent = escapedContent.replace(codeBlockRegex, (match, lang, code) => {
+                const encodedCode = code.replace(/</g, "<").replace(/>/g, ">");
                 return `<div class="code-block"><pre><code>${encodedCode}</code></pre><button class="copy-btn" aria-label="Copy code" onclick="navigator.clipboard.writeText(\`${code.replace(/`/g, "\\`")}\`).then(() => {this.innerHTML='<i class=\\'bi bi-clipboard-check\\'></i>';showToast('Code copied to clipboard!');setTimeout(() => this.innerHTML='<i class=\\'bi bi-clipboard\\'></i>', 2000);})"><i class="bi bi-clipboard"></i></button></div>`;
             });
+
+            // Convert Markdown to HTML
+            let formattedContent = escapedContent;
+
+            // Headings (#, ##, ###)
+            formattedContent = formattedContent.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>');
+            formattedContent = formattedContent.replace(/^##\s+(.+)$/gm, '<h2>$1</h2>');
+            formattedContent = formattedContent.replace(/^#\s+(.+)$/gm, '<h1>$1</h1>');
+
+            // Bold (**text**)
+            formattedContent = formattedContent.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+            // Italic (*text*)
+            formattedContent = formattedContent.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+            // Unordered lists (- item or * item)
+            formattedContent = formattedContent.replace(/^(?:-|\*)\s+(.+)$/gm, '<li>$1</li>');
+            formattedContent = formattedContent.replace(/(<li>.+<\/li>)(?=(?:<li>|$))/gs, '<ul>$1</ul>');
+
+            // Ordered lists (1. item)
+            formattedContent = formattedContent.replace(/^\d+\.\s+(.+)$/gm, '<li>$1</li>');
+            formattedContent = formattedContent.replace(/(<li>.+<\/li>)(?=(?:<li>|$))/gs, '<ol>$1</ol>');
+
+            // Links ([text](url))
+            formattedContent = formattedContent.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+
+            // Paragraphs (split by double newlines)
+            formattedContent = formattedContent.replace(/\n\n/g, '</p><p>');
+            formattedContent = `<p>${formattedContent}</p>`;
+
+            // Clean up empty paragraphs
+            formattedContent = formattedContent.replace(/<p>\s*<\/p>/g, '');
+
+            // Replace single newlines with <br> within paragraphs
+            formattedContent = formattedContent.replace(/(?<!\n)\n(?!\n)/g, '<br>');
+
+            return formattedContent;
         }
 
         function addMessage(content, isUser, isLoading = false) {

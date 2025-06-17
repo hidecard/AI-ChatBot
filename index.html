@@ -353,28 +353,42 @@
             font-family: 'Consolas', 'Monaco', monospace;
             font-size: 0.85rem;
             overflow-x: auto;
+            border: 1px solid var(--border-color);
         }
 
         .dark-mode .code-block {
             background: var(--code-dark-bg);
             color: #f3f4f6;
+            border-color: #4b5563;
         }
 
         .code-block pre {
             margin: 0;
             background: transparent;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .code-block code {
+            display: block;
+            padding: 0;
         }
 
         .code-block .copy-btn {
             position: absolute;
             top: 0.5rem;
             right: 0.5rem;
-            opacity: 1;
+            opacity: 0.7;
             color: #64748b;
+            transition: opacity 0.2s, color 0.2s;
         }
 
         .dark-mode .code-block .copy-btn {
             color: #9ca3af;
+        }
+
+        .code-block:hover .copy-btn {
+            opacity: 1;
         }
 
         .code-block .copy-btn:hover {
@@ -825,7 +839,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
                 return div.innerHTML;
             }
 
-            // Split content into parts to handle code blocks and text separately
+            // Split content into parts for text and code blocks
             let parts = [];
             let lastIndex = 0;
             const codeBlockRegex = /```(\w+)?\n([\s\S]*?)\n```/g;
@@ -840,24 +854,24 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
                 parts.push({
                     type: "code",
                     language: match[1] ? match[1].toLowerCase() : "text",
-                    content: match[2]
+                    content: match[2].trim()
                 });
                 lastIndex = match.index + match[0].length;
             }
-            // Add remaining text after the last code block
+            // Add remaining text
             if (lastIndex < content.length) {
                 parts.push({ type: "text", content: content.slice(lastIndex) });
             }
 
-            // Process each part
+            // Process parts into HTML
             let formattedContent = "";
             parts.forEach(part => {
                 if (part.type === "code") {
                     const escapedCode = escapeHtml(part.content);
-                    formattedContent += `<div class="code-block"><pre><code class="language-${part.language}">${escapedCode}</code></pre><button class="copy-btn" aria-label="Copy code" onclick="navigator.clipboard.writeText(\`${part.content.replace(/`/g, "\\`")}\`).then(() => {this.innerHTML='<i class=\\'bi bi-clipboard-check\\'></i>';showToast('Code copied to clipboard!');setTimeout(() => this.innerHTML='<i class=\\'bi bi-clipboard\\'></i>', 2000);})"><i class="bi bi-clipboard"></i></button></div>`;
+                    formattedContent += `<div class="code-block"><pre><code class="language-${part.language}">${escapedCode}</code></pre><button class="copy-btn" aria-label="Copy code" onclick="navigator.clipboard.writeText(\`${part.content.replace(/`/g, "\\`").replace(/\$/g, "\\$")}\`).then(() => {this.innerHTML='<i class=\\'bi bi-clipboard-check\\'></i>';showToast('Code copied to clipboard!');setTimeout(() => this.innerHTML='<i class=\\'bi bi-clipboard\\'></i>', 2000);})"><i class="bi bi-clipboard"></i></button></div>`;
                 } else {
                     let text = escapeHtml(part.content);
-                    // Convert Markdown to HTML
+                    // Basic Markdown processing
                     text = text.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>')
                               .replace(/^##\s+(.+)$/gm, '<h2>$1</h2>')
                               .replace(/^#\s+(.+)$/gm, '<h1>$1</h1>')
@@ -927,8 +941,10 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             chatBox.appendChild(messageDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
 
-            // Apply Prism.js highlighting
-            if (!isLoading) Prism.highlightAllUnder(messageDiv);
+            // Apply Prism.js highlighting after DOM insertion
+            if (!isLoading) {
+                Prism.highlightAllUnder(messageDiv);
+            }
 
             return messageDiv;
         }
@@ -992,6 +1008,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
 
                 currentConversation.messages.push({ role: "model", parts: [{ text: botResponse }] });
                 localStorage.setItem("conversations", JSON.stringify(conversations));
+                Prism.highlightAllUnder(loadingMessage);
             } catch (error) {
                 let errorMessage = "Error: Unable to get response. Please try again.";
                 if (error.message.includes("API key")) {

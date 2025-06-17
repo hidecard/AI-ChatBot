@@ -7,15 +7,16 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #6366f1;
-            --secondary-color: #f1f5f9;
+            --primary-color: #4f46e5;
+            --secondary-color: #f8fafc;
             --text-color: #1e293b;
-            --border-color: #e2e8f0;
+            --border-color: #e5e7eb;
+            --accent-color: #a5b4fc;
         }
 
         body {
@@ -24,6 +25,7 @@
             margin: 0;
             height: 100vh;
             overflow: hidden;
+            color: var(--text-color);
         }
 
         .container-fluid {
@@ -33,7 +35,7 @@
 
         .sidebar {
             height: 100vh;
-            width: 280px;
+            width: 300px;
             background-color: #ffffff;
             border-right: 1px solid var(--border-color);
             padding: 1.5rem;
@@ -44,7 +46,7 @@
         }
 
         .sidebar-hidden {
-            transform: translateX(-280px);
+            transform: translateX(-300px);
         }
 
         .sidebar-open {
@@ -52,9 +54,21 @@
         }
 
         .sidebar h5 {
-            color: var(--text-color);
-            font-weight: 600;
-            margin-bottom: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .search-bar {
+            margin-bottom: 1rem;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
         }
 
         .new-chat-btn {
@@ -62,37 +76,44 @@
             background: var(--primary-color);
             border: none;
             padding: 0.75rem;
-            font-weight: 500;
+            font-weight: 600;
+            color: white;
+            border-radius: 8px;
             transition: background 0.2s;
+            margin-bottom: 1.5rem;
         }
 
         .new-chat-btn:hover {
-            background: #4f46e5;
+            background: #4338ca;
         }
 
         .chat-history-item {
+            display: flex;
+            align-items: center;
             padding: 0.75rem;
             border-radius: 8px;
             cursor: pointer;
             margin-bottom: 0.5rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
             transition: background 0.2s;
-            color: var(--text-color);
+            font-size: 0.95rem;
         }
 
         .chat-history-item:hover, .chat-history-item.active {
             background-color: var(--secondary-color);
         }
 
+        .chat-history-item i {
+            margin-right: 0.75rem;
+            color: var(--accent-color);
+        }
+
         .chat-container {
             height: calc(100vh - 2rem);
-            max-width: 900px;
+            max-width: 1000px;
             margin: 1rem auto;
-            border-radius: 12px;
+            border-radius: 16px;
             background: #ffffff;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
             transition: margin-left 0.3s ease-in-out;
@@ -101,37 +122,71 @@
         .chat-box {
             flex: 1;
             overflow-y: auto;
-            padding: 1.5rem;
+            padding: 2rem;
             scroll-behavior: smooth;
         }
 
-        .user-message, .bot-message {
-            margin: 0.75rem 1rem;
-            padding: 1rem 1.25rem;
-            border-radius: 12px;
+        .welcome-message {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        .message {
+            display: flex;
+            align-items: flex-start;
+            margin: 1rem 0;
             max-width: 80%;
-            position: relative;
-            animation: slideIn 0.3s ease-out;
         }
 
         .user-message {
-            background: linear-gradient(135deg, var(--primary-color), #7c3aed);
-            color: white;
             margin-left: auto;
-            border-bottom-right-radius: 4px;
+            flex-direction: row-reverse;
         }
 
         .bot-message {
-            background: var(--secondary-color);
-            color: var(--text-color);
             margin-right: auto;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            margin: 0 0.75rem;
+            background: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            position: relative;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .user-message .message-content {
+            background: var(--primary-color);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message .message-content {
+            background: var(--secondary-color);
             border-bottom-left-radius: 4px;
         }
 
         .timestamp {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             color: #64748b;
-            margin-top: 0.5rem;
+            margin-top: 0.25rem;
             text-align: right;
         }
 
@@ -147,7 +202,7 @@
             transition: opacity 0.2s;
         }
 
-        .user-message:hover .copy-btn, .bot-message:hover .copy-btn {
+        .message-content:hover .copy-btn {
             opacity: 1;
         }
 
@@ -156,47 +211,56 @@
         }
 
         .input-area {
-            padding: 1rem;
+            padding: 1.5rem;
             border-top: 1px solid var(--border-color);
             background: #ffffff;
-            border-bottom-left-radius: 12px;
-            border-bottom-right-radius: 12px;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
         }
 
         .input-area form {
             display: flex;
-            gap: 0.75rem;
+            gap: 1rem;
+            align-items: center;
         }
 
         .input-area input {
             flex: 1;
             border-radius: 9999px;
             border: 1px solid var(--border-color);
-            padding: 0.75rem 1rem;
-            font-size: 0.95rem;
+            padding: 0.75rem 1.25rem;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .input-area input:focus {
+            border-color: var(--primary-color);
+            outline: none;
         }
 
         .input-area button {
             border-radius: 9999px;
             background: var(--primary-color);
             border: none;
-            padding: 0.75rem 1.5rem;
-            font-weight: 500;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            color: white;
+            transition: background 0.2s;
         }
 
         .input-area button:hover {
-            background: #4f46e5;
+            background: #4338ca;
         }
 
         .loader {
             display: inline-flex;
-            gap: 0.4rem;
+            gap: 0.5rem;
         }
 
         .dot {
-            width: 8px;
-            height: 8px;
-            background: #64748b;
+            width: 10px;
+            height: 10px;
+            background: var(--primary-color);
             border-radius: 50%;
             animation: bounce 0.6s infinite alternate;
         }
@@ -212,18 +276,18 @@
             background: var(--primary-color);
             border: none;
             border-radius: 8px;
-            padding: 0.5rem;
+            padding: 0.75rem;
             color: white;
             cursor: pointer;
-            transition: left 0.3s ease-in-out;
+            transition: left 0.3s ease-in-out, background 0.2s;
         }
 
         .sidebar-toggle:hover {
-            background: #4f46e5;
+            background: #4338ca;
         }
 
         .sidebar-toggle[aria-expanded="true"] {
-            left: 290px;
+            left: 310px;
         }
 
         .overlay {
@@ -233,7 +297,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.4);
             z-index: 999;
         }
 
@@ -241,19 +305,33 @@
             display: block;
         }
 
+        .toast {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            z-index: 1002;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
-                transform: translateX(-280px);
+                transform: translateX(-300px);
                 width: 80%;
-                max-width: 280px;
+                max-width: 300px;
             }
 
             .sidebar-open {
                 transform: translateX(0);
-            }
-
-            .sidebar-toggle {
-                display: block;
             }
 
             .chat-container {
@@ -268,38 +346,34 @@
 
         @media (min-width: 769px) {
             .sidebar {
+                transform: translateX(-300px);
+            }
+
+            .sidebar-open {
                 transform: translateX(0);
             }
 
-            .sidebar-hidden {
-                transform: translateX(-280px);
-            }
-
             .main-content {
-                margin-left: 280px;
+                margin-left: 0;
                 transition: margin-left 0.3s ease-in-out;
             }
 
-            .main-content.sidebar-collapsed {
-                margin-left: 0;
+            .main-content.sidebar-expanded {
+                margin-left: 300px;
             }
 
             .chat-container {
                 margin-left: auto;
                 margin-right: auto;
             }
-
-            .sidebar-toggle {
-                display: block;
-            }
         }
 
         @keyframes bounce {
-            to { transform: translateY(-5px); }
+            to { transform: translateY(-6px); }
         }
 
         @keyframes slideIn {
-            from { transform: translateY(10px); opacity: 0; }
+            from { transform: translateY(12px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
     </style>
@@ -309,11 +383,15 @@
         <i class="bi bi-list"></i>
     </button>
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+    <div class="toast" id="toast">Text copied to clipboard!</div>
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
             <div class="sidebar" id="sidebar">
                 <h5>Chat History</h5>
+                <div class="search-bar">
+                    <input type="text" id="searchHistory" placeholder="Search chats..." oninput="filterChats()" aria-label="Search chat history">
+                </div>
                 <button class="btn btn-primary new-chat-btn" onclick="newChat()">New Chat</button>
                 <div id="chatHistory"></div>
             </div>
@@ -321,12 +399,14 @@
             <div class="col-12 main-content" id="mainContent">
                 <div class="chat-container">
                     <div class="chat-box" id="chatBox">
-                        <!-- Chat messages will appear here -->
+                        <div class="welcome-message" id="welcomeMessage">
+                            Start a new conversation or select one from the sidebar!
+                        </div>
                     </div>
                     <div class="input-area">
-                        <form onsubmit="sendMessage(); return false;">
-                            <input type="text" id="userInput" class="form-control" placeholder="Type your message..." />
-                            <button type="submit" class="btn btn-primary">Send</button>
+                        <form onsubmit="sendMessage(); return false;" role="form">
+                            <input type="text" id="userInput" class="form-control" placeholder="Ask me anything..." aria-label="Message input" />
+                            <button type="submit" class="btn btn-primary" aria-label="Send message">Send</button>
                         </form>
                     </div>
                 </div>
@@ -343,58 +423,80 @@
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
         let conversations = JSON.parse(localStorage.getItem("conversations") || "[]");
         let currentConversationId = null;
+        let sidebarState = localStorage.getItem("sidebarState") === "open";
 
         function toggleSidebar() {
             const sidebar = document.getElementById("sidebar");
             const mainContent = document.getElementById("mainContent");
             const toggleBtn = document.querySelector(".sidebar-toggle");
             const overlay = document.getElementById("overlay");
-            const isOpen = sidebar.classList.contains("sidebar-open") || !sidebar.classList.contains("sidebar-hidden");
+            const isOpen = sidebar.classList.contains("sidebar-open");
 
             if (isOpen) {
                 sidebar.classList.remove("sidebar-open");
                 sidebar.classList.add("sidebar-hidden");
-                mainContent.classList.add("sidebar-collapsed");
+                mainContent.classList.remove("sidebar-expanded");
                 toggleBtn.setAttribute("aria-expanded", "false");
                 toggleBtn.querySelector("i").classList.replace("bi-x", "bi-list");
                 overlay.classList.remove("overlay-active");
+                sidebarState = false;
             } else {
                 sidebar.classList.add("sidebar-open");
                 sidebar.classList.remove("sidebar-hidden");
-                mainContent.classList.remove("sidebar-collapsed");
+                mainContent.classList.add("sidebar-expanded");
                 toggleBtn.setAttribute("aria-expanded", "true");
                 toggleBtn.querySelector("i").classList.replace("bi-list", "bi-x");
                 overlay.classList.add("overlay-active");
+                sidebarState = true;
             }
 
-            // Initialize Bootstrap tooltip
+            localStorage.setItem("sidebarState", sidebarState ? "open" : "closed");
             const tooltip = bootstrap.Tooltip.getInstance(toggleBtn) || new bootstrap.Tooltip(toggleBtn);
             tooltip.update();
         }
 
+        function showToast() {
+            const toast = document.getElementById("toast");
+            toast.classList.add("show");
+            setTimeout(() => toast.classList.remove("show"), 2000);
+        }
+
         function addMessage(content, isUser, isLoading = false) {
             const chatBox = document.getElementById("chatBox");
+            const welcomeMessage = document.getElementById("welcomeMessage");
+            if (welcomeMessage) welcomeMessage.remove();
+
             const messageDiv = document.createElement("div");
-            messageDiv.className = isUser ? "user-message" : "bot-message" + (isLoading ? " loading" : "");
-            messageDiv.innerHTML = isLoading ? `<span class="loader"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>` : content;
+            messageDiv.className = `message ${isUser ? "user-message" : "bot-message"}`;
+            const avatar = document.createElement("div");
+            avatar.className = "avatar";
+            avatar.textContent = isUser ? "U" : "AI";
+
+            const contentDiv = document.createElement("div");
+            contentDiv.className = "message-content";
+            contentDiv.innerHTML = isLoading ? `<span class="loader"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>` : content;
 
             if (!isLoading) {
                 const timestamp = document.createElement("div");
                 timestamp.className = "timestamp";
                 timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                messageDiv.appendChild(timestamp);
+                contentDiv.appendChild(timestamp);
 
                 const copyBtn = document.createElement("button");
                 copyBtn.className = "copy-btn";
                 copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
+                copyBtn.setAttribute("aria-label", "Copy message");
                 copyBtn.onclick = () => {
                     navigator.clipboard.writeText(content);
                     copyBtn.innerHTML = '<i class="bi bi-clipboard-check"></i>';
+                    showToast();
                     setTimeout(() => copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>', 2000);
                 };
-                messageDiv.appendChild(copyBtn);
+                contentDiv.appendChild(copyBtn);
             }
 
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(contentDiv);
             chatBox.appendChild(messageDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
             return messageDiv;
@@ -419,6 +521,7 @@
             currentConversation.messages.push({ role: "user", parts: [{ text: userInput }] });
 
             document.getElementById("userInput").value = "";
+            document.getElementById("userInput").focus();
             const loadingMessage = addMessage("", false, true);
 
             try {
@@ -432,39 +535,59 @@
                 if (data.error) throw new Error(data.error.message);
 
                 const botResponse = data.candidates[0].content.parts[0].text;
-                loadingMessage.innerHTML = botResponse;
+                loadingMessage.querySelector(".message-content").innerHTML = botResponse;
                 loadingMessage.classList.remove("loading");
                 const timestamp = document.createElement("div");
                 timestamp.className = "timestamp";
                 timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                loadingMessage.appendChild(timestamp);
+                loadingMessage.querySelector(".message-content").appendChild(timestamp);
 
                 const copyBtn = document.createElement("button");
                 copyBtn.className = "copy-btn";
                 copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
+                copyBtn.setAttribute("aria-label", "Copy message");
                 copyBtn.onclick = () => {
                     navigator.clipboard.writeText(botResponse);
                     copyBtn.innerHTML = '<i class="bi bi-clipboard-check"></i>';
+                    showToast();
                     setTimeout(() => copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>', 2000);
                 };
-                loadingMessage.appendChild(copyBtn);
+                loadingMessage.querySelector(".message-content").appendChild(copyBtn);
 
                 currentConversation.messages.push({ role: "model", parts: [{ text: botResponse }] });
                 localStorage.setItem("conversations", JSON.stringify(conversations));
             } catch (error) {
-                let errorMessage = "Error: Unable to get response. Check your API key or try again.";
+                let errorMessage = "Error: Unable to get response. Please try again.";
                 if (error.message.includes("API key")) {
-                    errorMessage = "Error: Invalid or restricted API key.";
+                    errorMessage = "Error: Invalid API key. Please check your configuration.";
                 } else if (error.message.includes("network")) {
-                    errorMessage = "Error: Network issue, please check your connection.";
+                    errorMessage = "Error: Network issue. Please check your connection.";
                 }
-                loadingMessage.innerHTML = errorMessage;
+                loadingMessage.querySelector(".message-content").innerHTML = errorMessage + ' <button class="btn btn-sm btn-outline-primary ms-2" onclick="sendMessage()">Retry</button>';
                 loadingMessage.classList.remove("loading");
                 const timestamp = document.createElement("div");
                 timestamp.className = "timestamp";
                 timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                loadingMessage.appendChild(timestamp);
+                loadingMessage.querySelector(".message-content").appendChild(timestamp);
             }
+        }
+
+        function filterChats() {
+            const searchTerm = document.getElementById("searchHistory").value.toLowerCase();
+            const chatHistory = document.getElementById("chatHistory");
+            chatHistory.innerHTML = "";
+            conversations
+                .filter(conv => conv.title.toLowerCase().includes(searchTerm))
+                .forEach(conv => {
+                    const historyItem = document.createElement("div");
+                    historyItem.className = `chat-history-item ${conv.id === currentConversationId ? "active" : ""}`;
+                    historyItem.innerHTML = `<i class="bi bi-chat-left-text"></i><span>${conv.title}</span>`;
+                    historyItem.onclick = () => {
+                        loadConversation(conv.id);
+                        if (window.innerWidth <= 768) toggleSidebar();
+                    };
+                    chatHistory.appendChild(historyItem);
+                });
         }
 
         function updateChatHistory() {
@@ -473,7 +596,7 @@
             conversations.forEach(conv => {
                 const historyItem = document.createElement("div");
                 historyItem.className = `chat-history-item ${conv.id === currentConversationId ? "active" : ""}`;
-                historyItem.textContent = conv.title;
+                historyItem.innerHTML = `<i class="bi bi-chat-left-text"></i><span>${conv.title}</span>`;
                 historyItem.onclick = () => {
                     loadConversation(conv.id);
                     if (window.innerWidth <= 768) toggleSidebar();
@@ -490,28 +613,34 @@
             const conversation = conversations.find(conv => conv.id === id);
             conversation.messages.forEach(msg => addMessage(msg.parts[0].text, msg.role === "user"));
             updateChatHistory();
+            document.getElementById("userInput").focus();
         }
 
         function newChat() {
             currentConversationId = null;
-            document.getElementById("chatBox").innerHTML = "";
+            const chatBox = document.getElementById("chatBox");
+            chatBox.innerHTML = '<div class="welcome-message" id="welcomeMessage">Start a new conversation or select one from the sidebar!</div>';
             document.getElementById("userInput").value = "";
+            document.getElementById("userInput").focus();
             updateChatHistory();
             if (window.innerWidth <= 768) toggleSidebar();
         }
 
         window.onload = () => {
+            if (sidebarState) toggleSidebar();
             updateChatHistory();
             if (conversations.length > 0) {
                 loadConversation(conversations[conversations.length - 1].id);
+            } else {
+                document.getElementById("userInput").focus();
             }
-            // Initialize Bootstrap tooltips
             const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
             tooltipTriggerList.forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
         };
 
-        document.getElementById("userInput").addEventListener("keypress", (e) => {
-            if (e.key === "Enter") {
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && sidebarState) toggleSidebar();
+            if (e.key === "Enter" && document.activeElement.id === "userInput") {
                 sendMessage();
                 e.preventDefault();
             }

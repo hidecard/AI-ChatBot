@@ -47,6 +47,10 @@
             transform: translateX(-280px);
         }
 
+        .sidebar-open {
+            transform: translateX(0);
+        }
+
         .sidebar h5 {
             color: var(--text-color);
             font-weight: 600;
@@ -91,6 +95,7 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             display: flex;
             flex-direction: column;
+            transition: margin-left 0.3s ease-in-out;
         }
 
         .chat-box {
@@ -200,7 +205,6 @@
         .dot:nth-child(3) { animation-delay: 0.4s; }
 
         .sidebar-toggle {
-            display: none;
             position: fixed;
             top: 1rem;
             left: 1rem;
@@ -210,6 +214,31 @@
             border-radius: 8px;
             padding: 0.5rem;
             color: white;
+            cursor: pointer;
+            transition: left 0.3s ease-in-out;
+        }
+
+        .sidebar-toggle:hover {
+            background: #4f46e5;
+        }
+
+        .sidebar-toggle[aria-expanded="true"] {
+            left: 290px;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 999;
+        }
+
+        .overlay-active {
+            display: block;
         }
 
         @media (max-width: 768px) {
@@ -237,6 +266,34 @@
             }
         }
 
+        @media (min-width: 769px) {
+            .sidebar {
+                transform: translateX(0);
+            }
+
+            .sidebar-hidden {
+                transform: translateX(-280px);
+            }
+
+            .main-content {
+                margin-left: 280px;
+                transition: margin-left 0.3s ease-in-out;
+            }
+
+            .main-content.sidebar-collapsed {
+                margin-left: 0;
+            }
+
+            .chat-container {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .sidebar-toggle {
+                display: block;
+            }
+        }
+
         @keyframes bounce {
             to { transform: translateY(-5px); }
         }
@@ -248,9 +305,10 @@
     </style>
 </head>
 <body>
-    <button class="sidebar-toggle" onclick="toggleSidebar()">
+    <button class="sidebar-toggle" onclick="toggleSidebar()" aria-expanded="false" aria-label="Toggle Sidebar" data-bs-toggle="tooltip" data-bs-placement="right" title="Toggle Sidebar">
         <i class="bi bi-list"></i>
     </button>
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
@@ -260,7 +318,7 @@
                 <div id="chatHistory"></div>
             </div>
             <!-- Main Chat Area -->
-            <div class="col-12 main-content">
+            <div class="col-12 main-content" id="mainContent">
                 <div class="chat-container">
                     <div class="chat-box" id="chatBox">
                         <!-- Chat messages will appear here -->
@@ -287,7 +345,31 @@
         let currentConversationId = null;
 
         function toggleSidebar() {
-            document.getElementById("sidebar").classList.toggle("sidebar-open");
+            const sidebar = document.getElementById("sidebar");
+            const mainContent = document.getElementById("mainContent");
+            const toggleBtn = document.querySelector(".sidebar-toggle");
+            const overlay = document.getElementById("overlay");
+            const isOpen = sidebar.classList.contains("sidebar-open") || !sidebar.classList.contains("sidebar-hidden");
+
+            if (isOpen) {
+                sidebar.classList.remove("sidebar-open");
+                sidebar.classList.add("sidebar-hidden");
+                mainContent.classList.add("sidebar-collapsed");
+                toggleBtn.setAttribute("aria-expanded", "false");
+                toggleBtn.querySelector("i").classList.replace("bi-x", "bi-list");
+                overlay.classList.remove("overlay-active");
+            } else {
+                sidebar.classList.add("sidebar-open");
+                sidebar.classList.remove("sidebar-hidden");
+                mainContent.classList.remove("sidebar-collapsed");
+                toggleBtn.setAttribute("aria-expanded", "true");
+                toggleBtn.querySelector("i").classList.replace("bi-list", "bi-x");
+                overlay.classList.add("overlay-active");
+            }
+
+            // Initialize Bootstrap tooltip
+            const tooltip = bootstrap.Tooltip.getInstance(toggleBtn) || new bootstrap.Tooltip(toggleBtn);
+            tooltip.update();
         }
 
         function addMessage(content, isUser, isLoading = false) {
@@ -394,7 +476,7 @@
                 historyItem.textContent = conv.title;
                 historyItem.onclick = () => {
                     loadConversation(conv.id);
-                    toggleSidebar();
+                    if (window.innerWidth <= 768) toggleSidebar();
                 };
                 chatHistory.appendChild(historyItem);
             });
@@ -415,7 +497,7 @@
             document.getElementById("chatBox").innerHTML = "";
             document.getElementById("userInput").value = "";
             updateChatHistory();
-            toggleSidebar();
+            if (window.innerWidth <= 768) toggleSidebar();
         }
 
         window.onload = () => {
@@ -423,6 +505,9 @@
             if (conversations.length > 0) {
                 loadConversation(conversations[conversations.length - 1].id);
             }
+            // Initialize Bootstrap tooltips
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            tooltipTriggerList.forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
         };
 
         document.getElementById("userInput").addEventListener("keypress", (e) => {

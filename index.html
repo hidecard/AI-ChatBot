@@ -12,11 +12,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #4f46e5;
-            --secondary-color: #f8fafc;
-            --text-color: #1e293b;
-            --border-color: #e5e7eb;
-            --accent-color: #a5b4fc;
+            --primary-color: #f97316; /* Orange */
+            --secondary-color: #fff7ed; /* Light orange-tinted background */
+            --text-color: #1e293b; /* Dark text for contrast */
+            --border-color: #e5e7eb; /* Neutral border */
+            --accent-color: #fb923c; /* Complementary orange for accents */
         }
 
         body {
@@ -84,7 +84,7 @@
         }
 
         .new-chat-btn:hover {
-            background: #4338ca;
+            background: #ea580c; /* Darker orange on hover */
         }
 
         .chat-history-item {
@@ -185,9 +185,13 @@
 
         .timestamp {
             font-size: 0.8rem;
-            color: #64748b;
+            color: #ffffff; /* White timestamp */
             margin-top: 0.25rem;
             text-align: right;
+        }
+
+        .user-message .timestamp {
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); /* Subtle shadow for readability on orange */
         }
 
         .copy-btn {
@@ -196,7 +200,7 @@
             right: 0.5rem;
             background: none;
             border: none;
-            color: #64748b;
+            color: #ffffff; /* Changed to white for consistency */
             cursor: pointer;
             opacity: 0;
             transition: opacity 0.2s;
@@ -207,7 +211,7 @@
         }
 
         .copy-btn:hover {
-            color: var(--text-color);
+            color: #d4d4d8; /* Light gray for hover */
         }
 
         .input-area {
@@ -249,7 +253,7 @@
         }
 
         .input-area button:hover {
-            background: #4338ca;
+            background: #ea580c;
         }
 
         .loader {
@@ -283,7 +287,7 @@
         }
 
         .sidebar-toggle:hover {
-            background: #4338ca;
+            background: #ea580c;
         }
 
         .sidebar-toggle[aria-expanded="true"] {

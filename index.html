@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Prism.js CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
     <style>
         :root {
             --primary-color: #f97316; /* Orange */
@@ -32,6 +34,7 @@
             overflow: hidden;
             color: var(--text-color);
             transition: background-color 0.3s, color 0.3s;
+            font-size: 1rem; /* Base font size for desktop */
         }
 
         body.dark-mode {
@@ -49,7 +52,7 @@
             width: 300px;
             background-color: #ffffff;
             border-right: 1px solid var(--border-color);
-            padding: 1.5rem;
+            padding: 1rem;
             overflow-y: auto;
             transition: transform 0.3s ease-in-out, background-color 0.3s;
             position: fixed;
@@ -70,9 +73,9 @@
         }
 
         .sidebar h5 {
-            font-weight: 700;
-            margin-bottom: 1rem;
-            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
         }
 
         .search-bar {
@@ -97,11 +100,12 @@
         .new-chat-btn, .clear-history-btn {
             width: 100%;
             border: none;
-            padding: 0.75rem;
+            padding: 0.6rem;
             font-weight: 600;
             border-radius: 8px;
             transition: background 0.2s;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
         }
 
         .new-chat-btn {
@@ -126,14 +130,14 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
         }
 
         .theme-toggle button {
             background: none;
             border: none;
             color: var(--text-color);
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             cursor: pointer;
         }
 
@@ -144,12 +148,12 @@
         .chat-history-item {
             display: flex;
             align-items: center;
-            padding: 0.75rem;
+            padding: 0.6rem;
             border-radius: 8px;
             cursor: pointer;
             margin-bottom: 0.5rem;
             transition: background 0.2s;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             position: relative;
         }
 
@@ -162,7 +166,7 @@
         }
 
         .chat-history-item i {
-            margin-right: 0.75rem;
+            margin-right: 0.6rem;
             color: var(--accent-color);
         }
 
@@ -204,7 +208,7 @@
         .chat-box {
             flex: 1;
             overflow-y: auto;
-            padding: 2rem;
+            padding: 1.5rem;
             scroll-behavior: smooth;
         }
 
@@ -234,9 +238,9 @@
 
         .welcome-message {
             text-align: center;
-            padding: 2rem;
+            padding: 1.5rem;
             color: #64748b;
-            font-size: 1.1rem;
+            font-size: 0.95rem;
         }
 
         .dark-mode .welcome-message {
@@ -246,7 +250,7 @@
         .message {
             display: flex;
             align-items: flex-start;
-            margin: 1rem 0;
+            margin: 0.75rem 0;
             max-width: 80%;
         }
 
@@ -260,27 +264,27 @@
         }
 
         .avatar {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            margin: 0 0.75rem;
+            margin: 0 0.6rem;
             background: var(--accent-color);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1rem;
+            font-size: 0.9rem;
             flex-shrink: 0;
         }
 
         .message-content {
             display: flex;
             flex-direction: column;
-            padding: 1rem 2rem 1rem 1.5rem;
+            padding: 0.8rem 1.5rem 0.8rem 1rem;
             border-radius: 12px;
             position: relative;
-            font-size: 0.95rem;
-            line-height: 1.5;
+            font-size: 0.9rem;
+            line-height: 1.4;
             animation: slideIn 0.3s ease-out;
         }
 
@@ -304,7 +308,7 @@
         }
 
         .timestamp {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #ffffff;
             margin-top: 0.25rem;
             text-align: right;
@@ -329,7 +333,7 @@
             cursor: pointer;
             opacity: 0;
             transition: opacity 0.3s ease;
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
 
         .message:hover .copy-btn {
@@ -347,13 +351,18 @@
             padding: 1rem;
             margin: 0.5rem 0;
             font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             overflow-x: auto;
         }
 
         .dark-mode .code-block {
             background: var(--code-dark-bg);
             color: #f3f4f6;
+        }
+
+        .code-block pre {
+            margin: 0;
+            background: transparent;
         }
 
         .code-block .copy-btn {
@@ -373,7 +382,7 @@
         }
 
         .input-area {
-            padding: 1.5rem;
+            padding: 1rem;
             border-top: 1px solid var(--border-color);
             background: #ffffff;
             border-bottom-left-radius: 16px;
@@ -388,7 +397,7 @@
 
         .input-area form {
             display: flex;
-            gap: 1rem;
+            gap: 0.75rem;
             align-items: center;
         }
 
@@ -396,8 +405,8 @@
             flex: 1;
             border-radius: 9999px;
             border: 1px solid var(--border-color);
-            padding: 0.75rem 1.25rem;
-            font-size: 1rem;
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
             transition: border-color 0.2s;
         }
 
@@ -417,10 +426,11 @@
             border-radius: 9999px;
             background: var(--primary-color);
             border: none;
-            padding: 0.75rem 2rem;
+            padding: 0.6rem 1.5rem;
             font-weight: 600;
             color: white;
             transition: background 0.2s;
+            font-size: 0.9rem;
         }
 
         .input-area button:hover {
@@ -433,8 +443,8 @@
         }
 
         .dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             background: var(--primary-color);
             border-radius: 50%;
             animation: bounce 0.6s infinite alternate;
@@ -451,7 +461,7 @@
             background: var(--primary-color);
             border: none;
             border-radius: 8px;
-            padding: 0.75rem;
+            padding: 0.6rem;
             color: white;
             cursor: pointer;
             transition: left 0.3s ease-in-out, background 0.2s;
@@ -487,11 +497,12 @@
             z-index: 1002;
             background: #ffffff;
             border: 1px solid var(--border-color);
-            padding: 0.75rem 1.5rem;
+            padding: 0.6rem 1.2rem;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             opacity: 0;
             transition: opacity 0.3s;
+            font-size: 0.85rem;
         }
 
         .dark-mode .toast {
@@ -515,15 +526,15 @@
         }
 
         .message-content h1 {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
         }
 
         .message-content h2 {
-            font-size: 1.25rem;
+            font-size: 1.1rem;
         }
 
         .message-content h3 {
-            font-size: 1.1rem;
+            font-size: 0.95rem;
         }
 
         .message-content p {
@@ -565,11 +576,17 @@
             font-style: italic;
         }
 
+        /* Responsive Adjustments */
         @media (max-width: 768px) {
+            body {
+                font-size: 0.9rem; /* Smaller base font size for mobile */
+            }
+
             .sidebar {
                 transform: translateX(-300px);
                 width: 80%;
                 max-width: 300px;
+                padding: 0.75rem;
             }
 
             .sidebar-open {
@@ -577,12 +594,79 @@
             }
 
             .chat-container {
-                margin: 1rem;
-                height: calc(100vh - 2rem);
+                margin: 0.5rem;
+                height: calc(100vh - 1rem);
             }
 
             .main-content {
                 margin-left: 0 !important;
+            }
+
+            .sidebar h5 {
+                font-size: 1rem;
+            }
+
+            .search-bar input {
+                font-size: 0.85rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .new-chat-btn, .clear-history-btn {
+                font-size: 0.85rem;
+                padding: 0.5rem;
+            }
+
+            .chat-history-item {
+                font-size: 0.8rem;
+                padding: 0.5rem;
+            }
+
+            .chat-box {
+                padding: 1rem;
+            }
+
+            .welcome-message {
+                font-size: 0.85rem;
+                padding: 1rem;
+            }
+
+            .message-content {
+                font-size: 0.85rem;
+                padding: 0.6rem 1.2rem 0.6rem 0.8rem;
+            }
+
+            .avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+
+            .timestamp {
+                font-size: 0.7rem;
+            }
+
+            .input-area {
+                padding: 0.75rem;
+            }
+
+            .input-area input {
+                font-size: 0.85rem;
+                padding: 0.5rem 0.8rem;
+            }
+
+            .input-area button {
+                font-size: 0.85rem;
+                padding: 0.5rem 1.2rem;
+            }
+
+            .code-block {
+                font-size: 0.8rem;
+                padding: 0.75rem;
+            }
+
+            .toast {
+                font-size: 0.8rem;
+                padding: 0.5rem 1rem;
             }
         }
 
@@ -664,6 +748,12 @@
     <!-- Bootstrap JS and Popper.js -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <!-- Prism.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-html.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
     <script>
         const API_KEY = "AIzaSyDxOoWvmAjmiB286W5A_q7ZyE04pWSuwKE";
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
@@ -729,48 +819,30 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
 
         function formatMessage(content) {
             // Escape HTML to prevent XSS
-            let escapedContent = content.replace(/&/g, "&").replace(/</g, "<").replace(/>/g, ">");
+            let escapedContent = content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
             // Handle code blocks
             const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
             escapedContent = escapedContent.replace(codeBlockRegex, (match, lang, code) => {
-                const encodedCode = code.replace(/</g, "<").replace(/>/g, ">");
-                return `<div class="code-block"><pre><code>${encodedCode}</code></pre><button class="copy-btn" aria-label="Copy code" onclick="navigator.clipboard.writeText(\`${code.replace(/`/g, "\\`")}\`).then(() => {this.innerHTML='<i class=\\'bi bi-clipboard-check\\'></i>';showToast('Code copied to clipboard!');setTimeout(() => this.innerHTML='<i class=\\'bi bi-clipboard\\'></i>', 2000);})"><i class="bi bi-clipboard"></i></button></div>`;
+                const language = lang ? lang.toLowerCase() : "text";
+                const encodedCode = code.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                return `<div class="code-block"><pre><code class="language-${language}">${encodedCode}</code></pre><button class="copy-btn" aria-label="Copy code" onclick="navigator.clipboard.writeText(\`${code.replace(/`/g, "\\`")}\`).then(() => {this.innerHTML='<i class=\\'bi bi-clipboard-check\\'></i>';showToast('Code copied to clipboard!');setTimeout(() => this.innerHTML='<i class=\\'bi bi-clipboard\\'></i>', 2000);})"><i class="bi bi-clipboard"></i></button></div>`;
             });
 
             // Convert Markdown to HTML
             let formattedContent = escapedContent;
-
-            // Headings (#, ##, ###)
             formattedContent = formattedContent.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>');
             formattedContent = formattedContent.replace(/^##\s+(.+)$/gm, '<h2>$1</h2>');
             formattedContent = formattedContent.replace(/^#\s+(.+)$/gm, '<h1>$1</h1>');
-
-            // Bold (**text**)
             formattedContent = formattedContent.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-
-            // Italic (*text*)
             formattedContent = formattedContent.replace(/\*(.+?)\*/g, '<em>$1</em>');
-
-            // Unordered lists (- item or * item)
             formattedContent = formattedContent.replace(/^(?:-|\*)\s+(.+)$/gm, '<li>$1</li>');
             formattedContent = formattedContent.replace(/(<li>.+<\/li>)(?=(?:<li>|$))/gs, '<ul>$1</ul>');
-
-            // Ordered lists (1. item)
             formattedContent = formattedContent.replace(/^\d+\.\s+(.+)$/gm, '<li>$1</li>');
             formattedContent = formattedContent.replace(/(<li>.+<\/li>)(?=(?:<li>|$))/gs, '<ol>$1</ol>');
-
-            // Links ([text](url))
             formattedContent = formattedContent.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
-
-            // Paragraphs (split by double newlines)
-            formattedContent = formattedContent.replace(/\n\n/g, '</p><p>');
             formattedContent = `<p>${formattedContent}</p>`;
-
-            // Clean up empty paragraphs
             formattedContent = formattedContent.replace(/<p>\s*<\/p>/g, '');
-
-            // Replace single newlines with <br> within paragraphs
             formattedContent = formattedContent.replace(/(?<!\n)\n(?!\n)/g, '<br>');
 
             return formattedContent;
@@ -824,6 +896,10 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             messageDiv.appendChild(contentDiv);
             chatBox.appendChild(messageDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Apply Prism.js highlighting
+            if (!isLoading) Prism.highlightAllUnder(messageDiv);
+
             return messageDiv;
         }
 

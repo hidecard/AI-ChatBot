@@ -591,7 +591,7 @@
 
         .message-content ul, .message-content ol {
             margin: 0.5rem 0;
-            padding-left: 1.5rem;
+            padding-left: 1rem;
         }
 
         .message-content li {
@@ -624,7 +624,7 @@
             font-style: italic;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 767px) {
             body {
                 font-size: 0.9rem;
             }
@@ -713,7 +713,7 @@
             }
         }
 
-        @media (min-width: 769px) {
+        @media (min-width: 768px) {
             .sidebar {
                 transform: translateX(-300px);
             }
@@ -748,10 +748,10 @@
     </style>
 </head>
 <body>
-    <button class="sidebar-toggle" onclick="toggleSidebar()" aria-expanded="false" aria-label="Toggle Sidebar" data-bs-toggle="tooltip" data-bs-placement="right" title="Toggle Sidebar">
+    <button class="sidebar-toggle" aria-expanded="false" aria-label="Toggle Sidebar" data-bs-toggle="tooltip" data-bs-placement="right" title="Toggle Sidebar">
         <i class="bi bi-list"></i>
     </button>
-    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+    <div class="overlay" id="overlay"></div>
     <div class="toast" id="toast">Text copied to clipboard!</div>
     <div class="container-fluid">
         <div class="row">
@@ -799,11 +799,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
     <script>
-        const API_KEY = "AIzaSyDxOoWvmAjmiB286W5A_q7ZyE04pWSuwKE";
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-        let conversations = JSON.parse(localStorage.getItem("conversations") || "[]");
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
+        let conversations = [];
         let currentConversationId = null;
         let sidebarState = localStorage.getItem("sidebarState") === "open";
+        let isToggling = false;
 
         const WELCOME_MESSAGE = `# Welcome to **YHA - AI**!
 
@@ -814,6 +814,28 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
 - **Explore AI**: Learn how AI works, experiment with prompts, or even build your own AI projects.
 
 **Let's get started!** Type your question or task below, and let's code the future together!`;
+
+        try {
+            const storedConversations = localStorage.getItem("conversations");
+            conversations = storedConversations ? JSON.parse(storedConversations) : [];
+        } catch (e) {
+            console.error("Failed to parse conversations from localStorage:", e);
+            conversations = [];
+            localStorage.setItem("conversations", JSON.stringify(conversations));
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function (...args) {
+                if (isToggling) return;
+                isToggling = true;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    func.apply(this, args);
+                    isToggling = false;
+                }, wait);
+            };
+        }
 
         function toggleSidebar() {
             const sidebar = document.getElementById("sidebar");
@@ -845,6 +867,8 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             tooltip.update();
         }
 
+        const debouncedToggleSidebar = debounce(toggleSidebar, 300);
+
         function toggleTheme() {
             document.body.classList.toggle("dark-mode");
             const themeIcon = document.querySelector(".theme-toggle i");
@@ -860,13 +884,21 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             setTimeout(() => toast.classList.remove("show"), 2000);
         }
 
-        function formatMessage(content) {
-            function escapeHtml(text) {
-                const div = document.createElement("div");
-                div.textContent = text;
-                return div.innerHTML;
-            }
+        function escapeHtml(text) {
+            const div = document.createElement("div");
+            div.textContent = text;
+            return div.innerHTML;
+        }
 
+        function copyCode(content) {
+            navigator.clipboard.writeText(content).then(() => {
+                showToast("Code copied to clipboard!");
+            }).catch(() => {
+                showToast("Failed to copy code!");
+            });
+        }
+
+        function formatMessage(content) {
             let parts = [];
             let lastIndex = 0;
             const codeBlockRegex = /```(\w+)?\n([\s\S]*?)\n```/g;
@@ -878,7 +910,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
                 }
                 const language = match[1] ? match[1].toLowerCase() : "text";
                 const langMap = { html: "markup", css: "css", js: "javascript", py: "python" };
-                const prismLang = langMap[language] || language;
+                const prismLang = langMap[language] || "text";
                 parts.push({
                     type: "code",
                     language: prismLang,
@@ -894,7 +926,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             parts.forEach(part => {
                 if (part.type === "code") {
                     const escapedCode = escapeHtml(part.content);
-                    formattedContent += `<div class="code-block"><pre class="line-numbers"><code class="language-${part.language}">${escapedCode}</code></pre><button class="copy-btn" aria-label="Copy code" onclick="navigator.clipboard.writeText(\`${part.content.replace(/`/g, "\\`").replace(/\$/g, "\\$")}\`).then(() => {showToast('Code copied to clipboard!');})"><i class="bi bi-clipboard"></i></button></div>`;
+                    formattedContent += `<div class="code-block"><pre class="line-numbers"><code class="language-${part.language}">${escapedCode}</code></pre><button class="copy-btn" aria-label="Copy code"><i class="bi bi-clipboard"></i></button></div>`;
                 } else {
                     let text = escapeHtml(part.content);
                     text = text.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>')
@@ -950,21 +982,29 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
                 copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
                 copyBtn.setAttribute("aria-label", "Copy message");
                 copyBtn.onclick = () => {
-                    navigator.clipboard.writeText(content);
-                    copyBtn.innerHTML = '<i class="bi bi-clipboard-check"></i>';
-                    showToast("Text copied to clipboard!");
-                    setTimeout(() => copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>', 2000);
+                    navigator.clipboard.writeText(content).then(() => {
+                        copyBtn.innerHTML = '<i class="bi bi-clipboard-check"></i>';
+                        showToast("Text copied to clipboard!");
+                        setTimeout(() => copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>', 2000);
+                    }).catch(() => {
+                        showToast("Failed to copy text!");
+                    });
                 };
                 buttonGroup.appendChild(copyBtn);
 
                 contentDiv.appendChild(buttonGroup);
 
-                Prism.highlightAllUnder(messageDiv);
-                const codeBlocks = messageDiv.querySelectorAll('.code-block');
-                codeBlocks.forEach(block => {
-                    if (block.scrollHeight > block.clientHeight) {
-                        block.classList.add('scrollable');
-                    }
+                requestAnimationFrame(() => {
+                    Prism.highlightAllUnder(messageDiv);
+                    const codeBlocks = messageDiv.querySelectorAll('.code-block');
+                    codeBlocks.forEach(block => {
+                        const pre = block.querySelector('pre');
+                        if (pre.scrollHeight > pre.clientHeight) {
+                            block.classList.add('scrollable');
+                        }
+                        const copyBtn = block.querySelector('.copy-btn');
+                        copyBtn.onclick = () => copyCode(block.querySelector('code').textContent);
+                    });
                 });
             }
 
@@ -999,11 +1039,17 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             const loadingMessage = addMessage("", false, true);
 
             try {
-                const response = await fetch(API_URL, {
+                const response = await fetch(`${API_URL}?key=${"YOUR_API_KEY"}`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ contents: currentConversation.messages }),
                 });
+
+                if (!response.ok) {
+                    if (response.status === 403) throw new Error("Invalid API key or access denied.");
+                    if (response.status === 429) throw new Error("Rate limit exceeded. Please try again later.");
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
 
                 const data = await response.json();
                 if (data.error) throw new Error(data.error.message);
@@ -1024,10 +1070,13 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
                 copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
                 copyBtn.setAttribute("aria-label", "Copy message");
                 copyBtn.onclick = () => {
-                    navigator.clipboard.writeText(botResponse);
-                    copyBtn.innerHTML = '<i class="bi bi-clipboard-check"></i>';
-                    showToast("Text copied to clipboard!");
-                    setTimeout(() => copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>', 2000);
+                    navigator.clipboard.writeText(botResponse).then(() => {
+                        copyBtn.innerHTML = '<i class="bi bi-clipboard-check"></i>';
+                        showToast("Text copied to clipboard!");
+                        setTimeout(() => copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>', 2000);
+                    }).catch(() => {
+                        showToast("Failed to copy text!");
+                    });
                 };
                 buttonGroup.appendChild(copyBtn);
 
@@ -1035,14 +1084,9 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
 
                 currentConversation.messages.push({ role: "model", parts: [{ text: botResponse }] });
                 localStorage.setItem("conversations", JSON.stringify(conversations));
-                Prism.highlightAllUnder(loadingMessage);
+                requestAnimationFrame(() => Prism.highlightAllUnder(loadingMessage));
             } catch (error) {
-                let errorMessage = "Error: Unable to get response. Please try again.";
-                if (error.message.includes("API key")) {
-                    errorMessage = "Error: Invalid API key. Please check your configuration.";
-                } else if (error.message.includes("network")) {
-                    errorMessage = "Error: Network issue. Please check your connection.";
-                }
+                let errorMessage = `Error: ${error.message || "Unable to get response. Please try again."}`;
                 loadingMessage.querySelector(".message-text").innerHTML = errorMessage + ' <button class="btn btn-sm btn-outline-primary ms-2" onclick="sendMessage()">Retry</button>';
                 loadingMessage.classList.remove("loading");
                 const timestamp = document.createElement("div");
@@ -1068,7 +1112,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             historyItem.innerHTML = `<i class="bi bi-chat-left-text"></i><span>${conv.title}</span>`;
             historyItem.onclick = () => {
                 loadConversation(conv.id);
-                if (window.innerWidth <= 768) toggleSidebar();
+                if (window.innerWidth <= 767) debouncedToggleSidebar();
             };
 
             const editBtn = document.createElement("button");
@@ -1150,12 +1194,12 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             document.getElementById("userInput").value = "";
             document.getElementById("userInput").focus();
             updateChatHistory();
-            if (window.innerWidth <= 768) toggleSidebar();
+            if (window.innerWidth <= 767) debouncedToggleSidebar();
         }
 
         window.onload = () => {
             if (localStorage.getItem("theme") === "dark") toggleTheme();
-            if (sidebarState) toggleSidebar();
+            if (sidebarState) debouncedToggleSidebar();
             updateChatHistory();
             if (conversations.length > 0) {
                 loadConversation(conversations[conversations.length - 1].id);
@@ -1174,12 +1218,15 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
         };
 
         document.addEventListener("keydown", (e) => {
-            if (e.key === "Escape" && sidebarState) toggleSidebar();
+            if (e.key === "Escape" && sidebarState) debouncedToggleSidebar();
             if (e.key === "Enter" && document.activeElement.id === "userInput") {
                 sendMessage();
                 e.preventDefault();
             }
         });
+
+        document.querySelector(".sidebar-toggle").onclick = debouncedToggleSidebar;
+        document.getElementById("overlay").onclick = debouncedToggleSidebar;
     </script>
 </body>
 </html>

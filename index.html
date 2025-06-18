@@ -1153,7 +1153,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
                 requestAnimationFrame(() => Prism.highlightAllUnder(loadingMessage));
             } catch (error) {
                 let errorMessage = `Error: ${error.message || "Unable to get response. Please try again."}`;
-                loadingMessage.querySelector(".message-text").innerHTML = errorMessage + ' <button class="btn btn-sm btn-outline-primary ms-2" onclick="sendMessage()">Retry</button>';
+                loadingMessage.querySelector(".message-text").innerHTML = 'Need to connect your VPN to get access to YHA - AI';
                 loadingMessage.classList.remove("loading");
                 const timestamp = document.createElement("div");
                 timestamp.className = "timestamp";

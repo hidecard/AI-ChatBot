@@ -857,8 +857,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
     <script>
-         const API_KEY = "AIzaSyDxOoWvmAjmiB286W5A_q7ZyE04pWSuwKE";
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
         let conversations = [];
         let currentConversationId = null;
         let sidebarState = localStorage.getItem("sidebarState") === "open";
@@ -1106,7 +1105,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             const loadingMessage = addMessage("", false, true);
 
             try {
-                const response = await fetch(`${API_URL}?key=${"YOUR_API_KEY"}`, {
+                const response = await fetch(`${API_URL}?key=${"AIzaSyDxOoWvmAjmiB286W5A_q7ZyE04pWSuwKE"}`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ contents: currentConversation.messages }),
@@ -1229,7 +1228,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
         }
 
         function confirmClearHistory() {
-            if (confirm("Are you sure you want to clear all chat history? This action cannot be undone.")) {
+            if (confirm("Are you sure you want to clear all chat history?")) {
                 conversations = [];
                 currentConversationId = null;
                 localStorage.setItem("conversations", JSON.stringify(conversations));

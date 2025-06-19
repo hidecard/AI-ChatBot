@@ -24,9 +24,9 @@
             --dark-bg: #1e293b;
             --dark-secondary: #2d3748;
             --dark-text: #f9fafb;
-            --code-bg: #f5f7fa; /* Lighter for better contrast */
-            --code-dark-bg: #1a202c; /* Slightly lighter dark background */
-            --code-dark-text: #e2e8f0; /* Brighter text for dark mode */
+            --code-bg: #f5f7fa;
+            --code-dark-bg: #1a202c;
+            --code-dark-text: #e2e8f0;
         }
 
         body {
@@ -48,6 +48,86 @@
         .container-fluid {
             height: 100vh;
             overflow: hidden;
+        }
+
+        .auth-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .dark-mode .auth-container {
+            background-color: var(--dark-secondary);
+            color: var(--dark-text);
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            background-color: #ddd;
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s;
+        }
+
+        .tab.active {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        .form-container form {
+            display: none;
+        }
+
+        .form-container form.active {
+            display: block;
+        }
+
+        .auth-container input {
+            margin: 8px 0;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .dark-mode .auth-container input {
+            border-color: #4b5563;
+            background-color: #374151;
+            color: var(--dark-text);
+        }
+
+        .auth-container button {
+            margin: 8px 0;
+            padding: 10px;
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .auth-container button:hover {
+            background-color: #ea580c;
+        }
+
+        #authMessage {
+            color: red;
+            margin-top: 10px;
+            text-align: center;
         }
 
         .sidebar {
@@ -100,7 +180,7 @@
             color: var(--dark-text);
         }
 
-        .new-chat-btn, .clear-history-btn {
+        .new-chat-btn, .clear-history-btn, .logout-btn {
             width: 100%;
             border: none;
             padding: 0.6rem;
@@ -121,12 +201,21 @@
             color: white;
         }
 
+        .logout-btn {
+            background: #6b7280;
+            color: white;
+        }
+
         .new-chat-btn:hover {
             background: #ea580c;
         }
 
         .clear-history-btn:hover {
             background: #b91c1c;
+        }
+
+        .logout-btn:hover {
+            background: #4b5563;
         }
 
         .theme-toggle {
@@ -446,7 +535,6 @@
             color: var(--primary-color);
         }
 
-        /* Prism.js custom overrides */
         .code-block pre code {
             color: #1e293b;
         }
@@ -707,6 +795,11 @@
                 margin-left: 0 !important;
             }
 
+            .auth-container {
+                margin: 20px;
+                padding: 15px;
+            }
+
             .sidebar h5 {
                 font-size: 1rem;
             }
@@ -716,7 +809,7 @@
                 padding: 0.4rem 0.8rem;
             }
 
-            .new-chat-btn, .clear-history-btn {
+            .new-chat-btn, .clear-history-btn, .logout-btn {
                 font-size: 0.85rem;
                 padding: 0.5rem;
             }
@@ -814,29 +907,52 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <div class="sidebar" id="sidebar">
+            <div class="sidebar sidebar-hidden" id="sidebar">
                 <h5>Chat History</h5>
                 <div class="theme-toggle">
-                    <button onclick="toggleTheme()" aria-label="Toggle Theme">
+                    <button id="themeToggleBtn" aria-label="Toggle Theme">
                         <i class="bi bi-moon-stars"></i>
                     </button>
                     <span>Dark Mode</span>
                 </div>
                 <div class="search-bar">
-                    <input type="text" id="searchHistory" placeholder="Search chats..." oninput="filterChats()" aria-label="Search chat history">
+                    <input type="text" id="searchHistory" placeholder="Search chats..." aria-label="Search chat history">
                 </div>
-                <button class="btn btn-primary new-chat-btn" onclick="newChat()">New Chat</button>
-                <button class="btn clear-history-btn" onclick="confirmClearHistory()">Clear History</button>
+                <button class="btn new-chat-btn" id="newChatBtn">New Chat</button>
+                <button class="btn clear-history-btn" id="clearHistoryBtn">Clear History</button>
+                <button class="btn logout-btn" id="logoutBtn">Logout</button>
                 <div id="chatHistory"></div>
             </div>
-            <!-- Main Chat Area -->
+            <!-- Main Content -->
             <div class="col-12 main-content" id="mainContent">
-                <div class="chat-container">
+                <!-- Auth Container -->
+                <div class="auth-container" id="authContainer">
+                    <div class="tabs">
+                        <div class="tab active" data-target="loginForm">Login</div>
+                        <div class="tab" data-target="registerForm">Register</div>
+                    </div>
+                    <div class="form-container">
+                        <form id="loginForm" class="active">
+                            <input type="email" id="loginEmail" placeholder="Email" required><br>
+                            <input type="password" id="loginPassword" placeholder="Password" required><br>
+                            <button type="submit">Login</button>
+                        </form>
+                        <form id="registerForm">
+                            <input type="text" id="regUsername" placeholder="Username" required><br>
+                            <input type="email" id="regEmail" placeholder="Email" required><br>
+                            <input type="password" id="regPassword" placeholder="Password" required><br>
+                            <button type="submit">Register</button>
+                        </form>
+                    </div>
+                    <div id="authMessage"></div>
+                </div>
+                <!-- Chat Container -->
+                <div class="chat-container" id="chatContainer" style="display: none;">
                     <div class="chat-box" id="chatBox">
                         <div class="welcome-message" id="welcomeMessage"></div>
                     </div>
                     <div class="input-area">
-                        <form onsubmit="sendMessage(); return false;" role="form">
+                        <form id="messageForm" role="form">
                             <input type="text" id="userInput" class="form-control" placeholder="Ask me anything..." aria-label="Message input" />
                             <button type="submit" class="btn btn-primary" aria-label="Send message">Send</button>
                         </form>
@@ -846,24 +962,46 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS and Popper.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-    <!-- Prism.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
-    <script>
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { getDatabase, ref, set, get, push, remove } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAMwEfmH2BCa-8Kf4X2eodVfVxnEVq9YV0",
+            authDomain: "mchat-8d6ef.firebaseapp.com",
+            databaseURL: "https://mchat-8d6ef.firebaseio.com",
+            projectId: "mchat-8d6ef",
+            storageBucket: "mchat-8d6ef.appspot.com",
+            messagingSenderId: "624124730943",
+            appId: "1:624124730943:web:0a8738bb556f085fcc228a",
+            measurementId: "G-B3M69NWSE2"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        // Bootstrap and Prism.js
+        import "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js";
+        import "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js";
+        import "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js";
+        import "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js";
+        import "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js";
+        import "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js";
+        import "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js";
+        import "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js";
+
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
         let conversations = [];
         let currentConversationId = null;
         let sidebarState = localStorage.getItem("sidebarState") === "open";
         let isToggling = false;
+        const QUESTION_LIMIT = 5;
 
-       
         const WELCOME_MESSAGE = `# Welcome to **YHA - AI**!
 
 Ready to dive into the world of AI and computer science? I'm here to help you explore, learn, and code smarter. Here's how we can get started:
@@ -873,26 +1011,53 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
 - **Explore AI**: Learn how AI works, experiment with prompts, or even build your own AI projects.
 `;
 
-        try {
-            const storedConversations = localStorage.getItem("conversations");
-            conversations = storedConversations ? JSON.parse(storedConversations) : [];
-        } catch (e) {
-            console.error("Failed to parse conversations from localStorage:", e);
-            conversations = [];
-            localStorage.setItem("conversations", JSON.stringify(conversations));
+        // Utility Functions
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.classList.add("show");
+            setTimeout(() => toast.classList.remove("show"), 2000);
         }
 
-        function debounce(func, wait) {
-            let timeout;
-            return function (...args) {
-                if (isToggling) return;
-                isToggling = true;
-                clearTimeout(timeout);
-                timeout = setTimeout(() => {
-                    func.apply(this, args);
-                    isToggling = false;
-                }, wait);
-            };
+        function escapeHtml(text) {
+            const div = document.createElement("div");
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function copyCode(content) {
+            navigator.clipboard.writeText(content).then(() => {
+                showToast("Code copied to clipboard!");
+            }).catch(() => {
+                showToast("Failed to copy code!");
+            });
+        }
+
+        // UI Toggle Functions
+        function showAuth() {
+            document.getElementById('authContainer').style.display = 'block';
+            document.getElementById('chatContainer').style.display = 'none';
+            document.getElementById('sidebar').style.display = 'none';
+            document.getElementById('sidebar-toggle').style.display = 'none';
+            document.getElementById('userInput').disabled = false;
+            document.querySelector('.input-area button').disabled = false;
+            document.getElementById('authMessage').innerText = '';
+            displayWelcomeMessage();
+        }
+
+        function showChat() {
+            document.getElementById('authContainer').style.display = 'none';
+            document.getElementById('chatContainer').style.display = 'flex';
+            document.getElementById('sidebar').style.display = 'block';
+            document.getElementById('sidebar-toggle').style.display = 'block';
+            document.getElementById('userInput').disabled = false;
+            document.querySelector('.input-area button').disabled = false;
+            updateChatHistory();
+            if (conversations.length > 0) {
+                loadConversation(conversations[conversations.length - 1].id);
+            } else {
+                displayWelcomeMessage();
+            }
         }
 
         function toggleSidebar() {
@@ -925,45 +1090,34 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             tooltip.update();
         }
 
+        function debounce(func, wait) {
+            let timeout;
+            return function (...args) {
+                if (isToggling) return;
+                isToggling = true;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    func.apply(this, args);
+                    isToggling = false;
+                }, wait);
+            };
+        }
+
         const debouncedToggleSidebar = debounce(toggleSidebar, 300);
 
+        // Theme Toggle
         function toggleTheme() {
-            document.body.classList.toggle("dark-mode");
-            const themeIcon = document.querySelector(".theme-toggle i");
+            const isDarkMode = document.body.classList.toggle("dark-mode");
+            const themeIcon = document.querySelector("#themeToggleBtn i");
             themeIcon.classList.toggle("bi-moon-stars");
             themeIcon.classList.toggle("bi-sun");
-            const isDarkMode = document.body.classList.contains("dark-mode");
             localStorage.setItem("theme", isDarkMode ? "dark" : "light");
-
-            // Switch Prism.js theme
             document.getElementById("prism-theme-light").disabled = isDarkMode;
             document.getElementById("prism-theme-dark").disabled = !isDarkMode;
-
-            // Re-highlight code blocks
-            requestAnimationFrame(() => Prism.highlightAll());
+            Prism.highlightAll();
         }
 
-        function showToast(message) {
-            const toast = document.getElementById("toast");
-            toast.textContent = message;
-            toast.classList.add("show");
-            setTimeout(() => toast.classList.remove("show"), 2000);
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement("div");
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function copyCode(content) {
-            navigator.clipboard.writeText(content).then(() => {
-                showToast("Code copied to clipboard!");
-            }).catch(() => {
-                showToast("Failed to copy code!");
-            });
-        }
-
+        // Message Formatting
         function formatMessage(content) {
             let parts = [];
             let lastIndex = 0;
@@ -1014,6 +1168,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             return formattedContent;
         }
 
+        // Add Message to Chat
         function addMessage(content, isUser, isLoading = false) {
             const chatBox = document.getElementById("chatBox");
             const welcomeMessage = document.getElementById("welcomeMessage");
@@ -1082,17 +1237,158 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             return messageDiv;
         }
 
-        async function sendMessage() {
+        // Display Welcome Message
+        function displayWelcomeMessage() {
+            const chatBox = document.getElementById("chatBox");
+            chatBox.innerHTML = `<div class="welcome-message" id="welcomeMessage">${formatMessage(WELCOME_MESSAGE)}</div>`;
+            document.getElementById("userInput").value = "";
+            document.getElementById("userInput").focus();
+        }
+
+        // Chat History Management
+        function appendChatHistoryItem(conv) {
+            const chatHistory = document.getElementById("chatHistory");
+            const historyItem = document.createElement("div");
+            historyItem.className = `chat-history-item ${conv.id === currentConversationId ? "active" : ""}`;
+            historyItem.innerHTML = `<i class="bi bi-chat-left-text"></i><span>${conv.title}</span>`;
+            historyItem.onclick = () => {
+                loadConversation(conv.id);
+                if (window.innerWidth <= 767) debouncedToggleSidebar();
+            };
+
+            const editBtn = document.createElement("button");
+            editBtn.className = "edit-title";
+            editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
+            editBtn.setAttribute("aria-label", "Edit chat title");
+            editBtn.onclick = (e) => {
+                e.stopPropagation();
+                editChatTitle(conv, historyItem);
+            };
+            historyItem.appendChild(editBtn);
+
+            chatHistory.appendChild(historyItem);
+        }
+
+        function updateChatHistory() {
+            const chatHistory = document.getElementById("chatHistory");
+            chatHistory.innerHTML = "";
+            conversations
+                .filter(conv => conv.messages && conv.messages.length > 0)
+                .forEach(conv => appendChatHistoryItem(conv));
+        }
+
+        function editChatTitle(conv, historyItem) {
+            const span = historyItem.querySelector("span");
+            const input = document.createElement("input");
+            input.type = conv.title;
+            input.value = "text";
+            document.type = 'input';
+            input.style.width = "80%";
+            input.style.padding = "0.25rem";
+            input.style.borderRadius = "4px";
+            input.style.border = "1px solid var(--border-color)";
+            span.replaceChild(input, span);
+            input.focus();
+
+            input.onblur(() => saveTitle());
+            input.onkeypress(e => {
+                if (e.key === "Enter") saveTitle();
+            });
+
+            async function saveTitle() {
+                conv.title = input.value.trim() || conv.title;
+                span.replaceChild(input, span);
+                span.textContent = conv.title;
+                if (auth.currentUser) {
+                    await set(ref(db, 'conversations/' + auth.currentUser.uid + '/' + conv.id), conv);
+                }
+                updateChatHistory();
+            }
+        }
+
+        function filterChats() {
+            const searchTerm = document.getElementById("searchHistory").value.toLowerCase();
+            const chatHistory = document.getElementById("chatHistory");
+            chatHistory.innerHTML = "";
+            conversations
+                .filter(conv => conv.title && conv.title.toLowerCase().includes(searchTerm))
+                .forEach(conv => appendChatHistoryItem(conv));
+        }
+
+        // Conversation Functions
+        async function newChat() {
+            console.log("Starting new chat");
+            currentConversationId = null;
+            updateChatHistory();
+            displayWelcomeMessage();
+            if (window.innerWidth <= 767) debouncedToggleSidebar();
+            showToast("New chat started!");
+        }
+
+        async function loadConversation(id) {
+            console.log("Loading conversation:", id);
+            currentConversationId = id;
+            const chatBox = document.getElementById("chatBox");
+            chatBox.innerHTML = "";
+            const conversation = conversations.find(conv => conv.id === id);
+            if (conversation && conversation.messages) {
+                conversation.messages.forEach(msg => addMessage(msg.parts[0].text, msg.role === "user"));
+            } else {
+                displayWelcomeMessage();
+            }
+            updateChatHistory();
+            document.getElementById("userInput").focus();
+        }
+
+        async function confirmClearHistory() {
+            console.log("Clearing history");
+            if (!confirm("Are you sure you want to clear all chat history?")) return;
+            try {
+                if (auth.currentUser) {
+                    await remove(ref(db, 'conversations/' + auth.currentUser.uid));
+                }
+                conversations = [];
+                currentConversationId = null;
+                updateChatHistory();
+                displayWelcomeMessage();
+                showToast("Chat history cleared!");
+            } catch (error) {
+                console.error("Error clearing history:", error);
+                showToast("Failed to clear history!");
+            }
+        }
+
+        // Send Message
+        async function sendMessage(event) {
+            event.preventDefault();
             const userInput = document.getElementById("userInput").value.trim();
             if (!userInput) return;
 
+            // Check question limit for non-authenticated users
+            if (!auth.currentUser) {
+                let questionCount = parseInt(localStorage.getItem('questionCount') || '0');
+                questionCount++;
+                localStorage.setItem('questionCount', questionCount);
+                if (questionCount > QUESTION_LIMIT) {
+                    document.getElementById('authMessage').innerText = 'You have reached the 5-question limit. Please log in to continue.';
+                    document.getElementById('userInput').disabled = true;
+                    document.querySelector('.input-area button').disabled = true;
+                    showAuth();
+                    return;
+                }
+            }
+
             if (!currentConversationId) {
-                currentConversationId = Date.now().toString();
-                conversations.push({
-                    id: currentConversationId,
+                const newConv = {
+                    id: push(ref(db, 'conversations/' + (auth.currentUser?.uid || 'guest'))).key,
                     title: userInput.slice(0, 30) + (userInput.length > 30 ? "..." : ""),
                     messages: []
-                });
+                };
+                conversations.push(newConv);
+                currentConversationId = newConv.id;
+                if (auth.currentUser) {
+                    await set(ref(db, 'conversations/' + auth.currentUser.uid + '/' + currentConversationId), newConv);
+                }
                 updateChatHistory();
             }
 
@@ -1100,12 +1396,17 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             const currentConversation = conversations.find(conv => conv.id === currentConversationId);
             currentConversation.messages.push({ role: "user", parts: [{ text: userInput }] });
 
+            // Save to Firebase
+            if (auth.currentUser) {
+                await set(ref(db, 'conversations/' + auth.currentUser.uid + '/' + currentConversationId), currentConversation);
+            }
+
             document.getElementById("userInput").value = "";
             document.getElementById("userInput").focus();
             const loadingMessage = addMessage("", false, true);
 
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyDxOoWvmAjmiB286W5A_q7ZyE04pWSuwKE`, {
+                const response = await fetch(`${API_URL}?key=AIzaSyDxOoWvmAjmiB286W5A_q7ZyE04pWSuwKE`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ contents: currentConversation.messages }),
@@ -1149,11 +1450,14 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
                 loadingMessage.querySelector(".message-content").appendChild(buttonGroup);
 
                 currentConversation.messages.push({ role: "model", parts: [{ text: botResponse }] });
-                localStorage.setItem("conversations", JSON.stringify(conversations));
-                requestAnimationFrame(() => Prism.highlightAllUnder(loadingMessage));
+                if (auth.currentUser) {
+                    await set(ref(db, 'conversations/' + auth.currentUser.uid + '/' + currentConversationId), currentConversation);
+                }
+                Prism.highlightAllUnder(loadingMessage);
             } catch (error) {
+                console.error("Error sending message:", error);
                 let errorMessage = `Error: ${error.message || "Unable to get response. Please try again."}`;
-                loadingMessage.querySelector(".message-text").innerHTML = 'Need to connect your VPN to get access to YHA - AI';
+                loadingMessage.querySelector(".message-text").innerHTML = errorMessage;
                 loadingMessage.classList.remove("loading");
                 const timestamp = document.createElement("div");
                 timestamp.className = "timestamp";
@@ -1162,137 +1466,140 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             }
         }
 
-        function filterChats() {
-            const searchTerm = document.getElementById("searchHistory").value.toLowerCase();
-            const chatHistory = document.getElementById("chatHistory");
-            chatHistory.innerHTML = "";
-            conversations
-                .filter(conv => conv.title.toLowerCase().includes(searchTerm))
-                .forEach(conv => appendChatHistoryItem(conv));
-        }
-
-        function appendChatHistoryItem(conv) {
-            const chatHistory = document.getElementById("chatHistory");
-            const historyItem = document.createElement("div");
-            historyItem.className = `chat-history-item ${conv.id === currentConversationId ? "active" : ""}`;
-            historyItem.innerHTML = `<i class="bi bi-chat-left-text"></i><span>${conv.title}</span>`;
-            historyItem.onclick = () => {
-                loadConversation(conv.id);
-                if (window.innerWidth <= 767) debouncedToggleSidebar();
-            };
-
-            const editBtn = document.createElement("button");
-            editBtn.className = "edit-title";
-            editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
-            editBtn.setAttribute("aria-label", "Edit chat title");
-            editBtn.onclick = (e) => {
-                e.stopPropagation();
-                editChatTitle(conv, historyItem);
-            };
-            historyItem.appendChild(editBtn);
-
-            chatHistory.appendChild(historyItem);
-        }
-
-        function editChatTitle(conv, historyItem) {
-            const span = historyItem.querySelector("span");
-            const input = document.createElement("input");
-            input.type = "text";
-            input.value = conv.title;
-            input.style.width = "80%";
-            input.style.padding = "0.25rem";
-            input.style.borderRadius = "4px";
-            input.style.border = "1px solid var(--border-color)";
-            span.replaceWith(input);
-            input.focus();
-
-            input.onblur = () => saveTitle();
-            input.onkeypress = (e) => {
-                if (e.key === "Enter") saveTitle();
-            };
-
-            function saveTitle() {
-                conv.title = input.value.trim() || conv.title;
-                input.replaceWith(span);
-                span.textContent = conv.title;
-                localStorage.setItem("conversations", JSON.stringify(conversations));
-                updateChatHistory();
-            }
-        }
-
-        function updateChatHistory() {
-            const chatHistory = document.getElementById("chatHistory");
-            chatHistory.innerHTML = "";
-            conversations.forEach(conv => appendChatHistoryItem(conv));
-            localStorage.setItem("conversations", JSON.stringify(conversations));
-        }
-
-        function confirmClearHistory() {
-            if (confirm("Are you sure you want to clear all chat history?")) {
+        // Authentication Handling
+        async function logout() {
+            console.log("Logging out");
+            try {
+                await signOut(auth);
                 conversations = [];
                 currentConversationId = null;
-                localStorage.setItem("conversations", JSON.stringify(conversations));
-                updateChatHistory();
-                newChat();
-                showToast("Chat history cleared!");
+                localStorage.removeItem('questionCount');
+                showAuth();
+                showToast("Logged out successfully!");
+            } catch (error) {
+                console.error("Error logging out:", error);
+                showToast("Failed to log out!");
             }
         }
 
-        function loadConversation(id) {
-            currentConversationId = id;
-            const chatBox = document.getElementById("chatBox");
-            chatBox.innerHTML = "";
-            const conversation = conversations.find(conv => conv.id === id);
-            conversation.messages.forEach(msg => addMessage(msg.parts[0].text, msg.role === "user"));
-            updateChatHistory();
-            document.getElementById("userInput").focus();
-        }
+        // Event Listeners
+        function initializeEventListeners() {
+            // Tab Switching
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.form-container form').forEach(f => f.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.target).classList.add('active');
+                });
+            });
 
-        function newChat() {
-            currentConversationId = null;
-            const chatBox = document.getElementById("chatBox");
-            const welcomeMessageDiv = document.createElement("div");
-            welcomeMessageDiv.className = "welcome-message";
-            welcomeMessageDiv.id = "welcomeMessage";
-            welcomeMessageDiv.innerHTML = formatMessage(WELCOME_MESSAGE);
-            chatBox.innerHTML = "";
-            chatBox.appendChild(welcomeMessageDiv);
-            document.getElementById("userInput").value = "";
-            document.getElementById("userInput").focus();
-            updateChatHistory();
-            if (window.innerWidth <= 767) debouncedToggleSidebar();
-        }
-
-        window.onload = () => {
-            if (localStorage.getItem("theme") === "dark") toggleTheme();
-            if (sidebarState) debouncedToggleSidebar();
-            updateChatHistory();
-            if (conversations.length > 0) {
-                loadConversation(conversations[conversations.length - 1].id);
-            } else {
-                const chatBox = document.getElementById("chatBox");
-                const welcomeMessageDiv = document.createElement("div");
-                welcomeMessageDiv.className = "welcome-message";
-                welcomeMessageDiv.id = "welcomeMessage";
-                welcomeMessageDiv.innerHTML = formatMessage(WELCOME_MESSAGE);
-                chatBox.innerHTML = "";
-                chatBox.appendChild(welcomeMessageDiv);
-                document.getElementById("userInput").focus();
-            }
-            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-            tooltipTriggerList.forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
-        };
-
-        document.addEventListener("keydown", (e) => {
-            if (e.key === "Escape" && sidebarState) debouncedToggleSidebar();
-            if (e.key === "Enter" && document.activeElement.id === "userInput") {
-                sendMessage();
+            // Register Form
+            document.getElementById('registerForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
+                const username = document.getElementById('regUsername').value;
+                const email = document.getElementById('regEmail').value;
+                const password = document.getElementById('regPassword').value;
+
+                try {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
+                    await set(ref(db, 'users/' + user.uid), {
+                        username: username,
+                        email: email
+                    });
+                    document.getElementById('authMessage').innerText = 'User registered successfully!';
+                    document.getElementById('registerForm').reset();
+                    showChat();
+                    showToast("Registration successful!");
+                } catch (error) {
+                    console.error("Error registering:", error);
+                    document.getElementById('authMessage').innerText = `Error: ${error.message}`;
+                }
+            });
+
+            // Login Form
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+
+                try {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    document.getElementById('authMessage').innerText = 'Login successful!';
+                    showChat();
+                    showToast("Login successful!");
+                } catch (error) {
+                    console.error("Error logging in:", error);
+                    document.getElementById('authMessage').innerText = `Error: ${error.message}`;
+                }
+            });
+
+            // Message Form
+            document.getElementById('messageForm').addEventListener('submit', sendMessage);
+
+            // Sidebar Toggle
+            document.querySelector(".sidebar-toggle").addEventListener('click', debouncedToggleSidebar);
+            document.getElementById("overlay").addEventListener('click', debouncedToggleSidebar);
+
+            // Theme Toggle
+            document.getElementById('themeToggleBtn').addEventListener('click', toggleTheme);
+
+            // New Chat
+            document.getElementById('newChatBtn').addEventListener('click', newChat);
+
+            // Clear History
+            document.getElementById('clearHistoryBtn').addEventListener('click', confirmClearHistory);
+
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+
+            // Search History
+            document.getElementById('searchHistory').addEventListener('input', filterChats);
+
+            // Keyboard Shortcuts
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && sidebarState) debouncedToggleSidebar();
+                if (e.key === "Enter" && document.activeElement.id === "userInput") {
+                    sendMessage(e);
+                }
+            });
+        }
+
+        // Authentication State Listener
+        onAuthStateChanged(auth, async (user) => {
+            console.log("Auth state changed:", user ? user.uid : "No user");
+            if (user) {
+                try {
+                    const snapshot = await get(ref(db, 'conversations/' + user.uid));
+                    conversations = snapshot.exists() ? Object.entries(snapshot.val()).map(([id, conv]) => ({ id, ...conv })) : [];
+                    showChat();
+                } catch (error) {
+                    console.error("Error loading conversations:", error);
+                    showToast("Failed to load conversations!");
+                }
+            } else {
+                conversations = [];
+                currentConversationId = null;
+                showAuth();
+                const questionCount = parseInt(localStorage.getItem('questionCount') || '0');
+                if (questionCount >= QUESTION_LIMIT) {
+                    document.getElementById('authMessage').innerText = 'You have reached the 5-question limit. Please log in to continue.';
+                    document.getElementById('userInput').disabled = true;
+                    document.querySelector('.input-area button').disabled = true;
+                }
             }
         });
 
-        document.querySelector(".sidebar-toggle").onclick = debouncedToggleSidebar;
-        document.getElementById("overlay").onclick = debouncedToggleSidebar;
+        // Initialize
+        window.onload = () => {
+            console.log("Window loaded");
+            if (localStorage.getItem("theme") === "dark") toggleTheme();
+            if (sidebarState) debouncedToggleSidebar();
+            initializeEventListeners();
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            tooltipTriggerList.forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        };
     </script>
 </body>
 </html>

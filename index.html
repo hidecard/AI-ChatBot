@@ -4,213 +4,244 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YHA - AI</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Remix Icon -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet"/>
     <!-- Prism.js CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" id="prism-theme-light" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" id="prism-theme-dark" disabled />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet" />
     <style>
         :root {
-            --primary-color: #f97316;
-            --secondary-color: #fff7ed;
-            --text-color: #1e293b;
-            --border-color: #e5e7eb;
-            --accent-color: #fb923c;
-            --dark-bg: #1e293b;
-            --dark-secondary: #2d3748;
-            --dark-text: #f9fafb;
-            --code-bg: #f5f7fa; /* Lighter for better contrast */
-            --code-dark-bg: #1a202c; /* Slightly lighter dark background */
-            --code-dark-text: #e2e8f0; /* Brighter text for dark mode */
+            --primary-bg: #ffffff;
+            --secondary-bg: #f9fafb;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --accent: #f97316;
+            --accent-hover: #ea580c;
+            --border: #e5e7eb;
+            --dark-bg: #111827;
+            --dark-secondary-bg: #1f2a44;
+            --dark-text: #d1d5db;
+            --dark-border: #374151;
+            --code-bg: #f3f4f6;
+            --code-dark-bg: #1e293b;
         }
 
         body {
-            background-color: var(--secondary-color);
             font-family: 'Inter', sans-serif;
             margin: 0;
             height: 100vh;
             overflow: hidden;
-            color: var(--text-color);
-            transition: background-color 0.3s, color 0.3s;
-            font-size: 1rem;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        body.dark-mode {
+        body.dark {
             background-color: var(--dark-bg);
             color: var(--dark-text);
         }
 
-        .container-fluid {
-            height: 100vh;
-            overflow: hidden;
-        }
-
         .sidebar {
+            width: 260px;
             height: 100vh;
-            width: 300px;
-            background-color: #ffffff;
-            border-right: 1px solid var(--border-color);
+            background-color: var(--primary-bg);
+            border-right: 1px solid var(--border);
             padding: 1rem;
-            overflow-y: auto;
-            transition: transform 0.3s ease-in-out, background-color 0.3s;
             position: fixed;
             z-index: 1000;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            overflow-y: auto;
         }
 
-        .dark-mode .sidebar {
-            background-color: var(--dark-secondary);
-            border-right-color: #4b5563;
+        .dark .sidebar {
+            background-color: var(--dark-secondary-bg);
+            border-right-color: var(--dark-border);
         }
 
         .sidebar-hidden {
-            transform: translateX(-300px);
+            transform: translateX(-260px);
         }
 
         .sidebar-open {
             transform: translateX(0);
         }
 
-        .sidebar h5 {
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            font-size: 1.1rem;
-        }
-
-        .search-bar {
-            margin-bottom: 1rem;
-        }
-
-        .search-bar input {
-            width: 100%;
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 0.9rem;
-            transition: border-color 0.2s, background-color 0.3s;
-        }
-
-        .dark-mode .search-bar input {
-            border-color: #4b5563;
-            background-color: #374151;
-            color: var(--dark-text);
-        }
-
-        .new-chat-btn, .clear-history-btn {
-            width: 100%;
-            border: none;
-            padding: 0.6rem;
-            font-weight: 600;
-            border-radius: 8px;
-            transition: background 0.2s, color 0.2s;
-            margin-bottom: 0.75rem;
-            font-size: 0.9rem;
-        }
-
-        .new-chat-btn {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .clear-history-btn {
-            background: #dc2626;
-            color: white;
-        }
-
-        .new-chat-btn:hover {
-            background: #ea580c;
-        }
-
-        .clear-history-btn:hover {
-            background: #b91c1c;
-        }
-
-        .theme-toggle {
+        .sidebar-header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.75rem;
+            padding: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .dark .sidebar-header h2 {
+            color: var(--dark-text);
         }
 
         .theme-toggle button {
             background: none;
             border: none;
-            color: var(--text-color);
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: color 0.2s;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: color 0.2s, background-color 0.2s, transform 0.2s;
         }
 
-        .dark-mode .theme-toggle button {
+        .dark .theme-toggle button {
             color: var(--dark-text);
+        }
+
+        .theme-toggle button:hover {
+            background-color: var(--accent);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background-color: var(--secondary-bg);
+            transition: border-color 0.2s, background-color 0.3s;
+        }
+
+        .dark .search-bar input {
+            background-color: var(--dark-border);
+            border-color: var(--dark-border);
+            color: var(--dark-text);
+        }
+
+        .search-bar input:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+        }
+
+        .btn-primary, .btn-danger {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+            transform: translateY(-2px);
         }
 
         .chat-history-item {
             display: flex;
             align-items: center;
-            padding: 0.6rem;
+            padding: 0.75rem;
             border-radius: 8px;
             cursor: pointer;
             margin-bottom: 0.5rem;
-            transition: background 0.2s, color 0.2s;
-            font-size: 0.85rem;
-            position: relative;
+            font-size: 0.9rem;
+            transition: background-color 0.2s, transform 0.2s;
         }
 
         .chat-history-item:hover, .chat-history-item.active {
-            background-color: var(--secondary-color);
-            color: var(--text-color);
+            background-color: var(--secondary-bg);
+            transform: translateX(4px);
         }
 
-        .dark-mode .chat-history-item:hover, .dark-mode .chat-history-item.active {
-            background-color: #4b5563;
-            color: var(--dark-text);
+        .dark .chat-history-item:hover, .dark .chat-history-item.active {
+            background-color: var(--dark-border);
         }
 
         .chat-history-item i {
-            margin-right: 0.6rem;
-            color: var(--accent-color);
+            margin-right: 0.75rem;
+            color: var(--accent);
+            font-size: 1rem;
         }
 
-        .dark-mode .chat-history-item i {
-            color: #f97316;
+        .dark .chat-history-item i {
+            color: var(--accent);
+        }
+
+        .chat-history-item span {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .edit-title {
             background: none;
             border: none;
-            color: var(--text-color);
+            color: var(--text-secondary);
             opacity: 0;
-            position: absolute;
-            right: 0.5rem;
-            transition: opacity 0.2s, color 0.2s;
+            transition: opacity 0.2s;
+            font-size: 0.85rem;
         }
 
         .chat-history-item:hover .edit-title {
             opacity: 1;
         }
 
-        .dark-mode .edit-title {
+        .dark .edit-title {
             color: var(--dark-text);
         }
 
-        .chat-container {
-            height: calc(100vh - 2rem);
-            max-width: 1000px;
-            margin: 1rem auto;
-            border-radius: 16px;
-            background: white;
-            display: flex;
-            flex-direction: column;
-            transition: margin-left 0.3s ease-in-out, background-color 0.3s;
+        .edit-title:hover {
+            color: var(--accent);
         }
 
-        .dark-mode .chat-container {
-            background: var(--dark-secondary);
+        .main-content {
+            margin-left: 0;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.sidebar-expanded {
+            margin-left: 260px;
+        }
+
+        .chat-container {
+            max-width: 900px;
+            margin: 1rem auto;
+            height: calc(100vh - 2rem);
+            background-color: var(--primary-bg);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        .dark .chat-container {
+            background-color: var(--dark-secondary-bg);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         .chat-box {
@@ -218,47 +249,62 @@
             overflow-y: auto;
             padding: 1.5rem;
             scroll-behavior: smooth;
-            max-height: calc(100vh - 4rem - 60px);
         }
 
-        .chat-box::-webkit-scrollbar, .sidebar::-webkit-scrollbar, .code-block::-webkit-scrollbar {
-            width: 8px;
+        .chat-box::-webkit-scrollbar {
+            width: 6px;
         }
 
-        .chat-box::-webkit-scrollbar-track, .sidebar::-webkit-scrollbar-track, .code-block::-webkit-scrollbar-track {
-            background: transparent;
-            border-radius: 4px;
-        }
-
-        .chat-box::-webkit-scrollbar-thumb, .sidebar::-webkit-scrollbar-thumb, .code-block::-webkit-scrollbar-thumb {
-            background: var(--accent-color);
-            border-radius: 4px;
-        }
-
-        .chat-box::-webkit-scrollbar-thumb:hover, .sidebar::-webkit-scrollbar-thumb:hover, .code-block::-webkit-scrollbar-thumb:hover {
-            background: #ea580c;
-        }
-
-        .chat-box, .sidebar, .code-block {
-            scrollbar-width: thin;
-            scrollbar-color: var(--accent-color) transparent;
+        .chat-box::-webkit-scrollbar-thumb {
+            background-color: var(--accent);
+            border-radius: 3px;
         }
 
         .welcome-message {
             text-align: center;
-            padding: 1.5rem;
-            color: #64748b;
-            font-size: 0.95rem;
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 600px;
+            background: linear-gradient(180deg, var(--secondary-bg), var(--primary-bg));
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
-        .dark-mode .welcome-message {
-            color: #d1d5db;
+        .dark .welcome-message {
+            background: linear-gradient(180deg, var(--dark-border), var(--dark-secondary-bg));
+            color: var(--dark-text);
+        }
+
+        .welcome-message h1 {
+            font-size: 1.75rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .welcome-message p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin: 0.5rem 0;
+        }
+
+        .dark .welcome-message p {
+            color: var(--dark-text);
+        }
+
+        .welcome-message a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .welcome-message a:hover {
+            text-decoration: underline;
         }
 
         .message {
             display: flex;
             align-items: flex-start;
-            margin: 0.75rem 0;
+            margin: 1rem 0;
             max-width: 80%;
         }
 
@@ -272,86 +318,86 @@
         }
 
         .avatar {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            margin: 0 0.6rem;
-            background: var(--accent-color);
+            background-color: var(--accent);
+            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
             font-size: 0.9rem;
             flex-shrink: 0;
+            margin: 0 0.75rem;
+        }
+
+        .bot-message .avatar {
+            background-color: #10b981;
         }
 
         .message-content {
-            display: flex;
-            flex-direction: column;
-            padding: 0.8rem 1.5rem 0.8rem 1rem;
+            padding: 0.75rem 1.25rem;
             border-radius: 12px;
-            position: relative;
+            background-color: var(--secondary-bg);
             font-size: 0.9rem;
-            line-height: 1.4;
-            animation: slideIn 0.3s ease-out;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .user-message .message-content {
+            background-color: var(--accent);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .dark .message-content {
+            background-color: var(--dark-border);
+        }
+
+        .dark .user-message .message-content {
+            background-color: var(--accent);
         }
 
         .message-text {
             word-break: break-word;
         }
 
-        .user-message .message-content {
-            background: var(--primary-color);
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-
-        .bot-message .message-content {
-            background: var(--secondary-color);
-            border-bottom-left-radius: 4px;
-        }
-
-        .dark-mode .bot-message .message-content {
-            background: #374151;
-            color: var(--dark-text);
-        }
-
         .timestamp {
             font-size: 0.75rem;
-            color: #ffffff;
+            color: var(--text-secondary);
             margin-top: 0.25rem;
             text-align: right;
         }
 
-        .user-message .timestamp {
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        .dark .timestamp {
+            color: var(--dark-text);
         }
 
-        .button-group {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            display: flex;
-            gap: 0.5rem;
+        .user-message .timestamp {
+            color: white;
         }
 
         .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
             background: none;
             border: none;
-            color: #ffffff;
-            cursor: pointer;
+            color: var(--text-secondary);
             opacity: 0;
-            transition: opacity 0.3s ease, color 0.2s;
-            font-size: 0.9rem;
-            z-index: 10;
+            transition: opacity 0.2s;
         }
 
         .message:hover .copy-btn {
             opacity: 1;
         }
 
+        .dark .copy-btn {
+            color: var(--dark-text);
+        }
+
         .copy-btn:hover {
-            color: #e5e7eb;
+            color: var(--accent);
         }
 
         .code-block {
@@ -359,226 +405,108 @@
             background: var(--code-bg);
             border-radius: 8px;
             padding: 1rem;
-            margin: 0.75rem 0;
-            font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
-            font-size: 0.9rem;
-            line-height: 1.5;
-            overflow-x: auto;
-            overflow-y: auto;
-            max-height: auto;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-
-        .dark-mode .code-block {
-            background: var(--code-dark-bg);
-            color: var(--code-dark-text);
-            border-color: #4b5563;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .code-block.scrollable {
-            border-bottom: 2px solid var(--accent-color);
-            max-height: 400px;
-        }
-
-        .code-block.expanded {
-            max-height: none;
-        }
-
-        .code-block .toggle-btn {
-            position: absolute;
-            top: 0.5rem;
-            left: 0.5rem;
-            background: none;
-            border: none;
-            color: var(--text-color);
-            cursor: pointer;
-            z-index: 10;
+            margin: 0.5rem 0;
+            font-family: 'Menlo', 'Consolas', monospace;
             font-size: 0.85rem;
+            border: 1px solid var(--border);
         }
 
-        .dark-mode .code-block .toggle-btn {
+        .dark .code-block {
+            background: var(--code-dark-bg);
+            border-color: var(--dark-border);
             color: var(--dark-text);
-        }
-
-        .code-block.expanded .toggle-btn i {
-            transform: rotate(180deg);
         }
 
         .code-block pre {
             margin: 0;
-            background: transparent;
             white-space: pre-wrap;
             word-break: break-word;
         }
 
-        .code-block code {
-            display: block;
-            padding: 0;
-            color: inherit;
-        }
-
         .code-block .copy-btn {
-            position: absolute;
             top: 0.5rem;
             right: 0.5rem;
-            opacity: 0.7;
-            color: #9ca3af;
-            transition: opacity 0.2s, color 0.2s;
-            z-index: 10;
             background: var(--code-bg);
-            padding: 0.3rem 0.5rem;
+            padding: 0.25rem 0.5rem;
             border-radius: 4px;
-            font-size: 0.85rem;
         }
 
-        .dark-mode .code-block .copy-btn {
-            color: #d1d5db;
+        .dark .code-block .copy-btn {
             background: var(--code-dark-bg);
-        }
-
-        .code-block:hover .copy-btn {
-            opacity: 1;
-        }
-
-        .code-block .copy-btn:hover {
-            color: var(--primary-color);
-        }
-
-        /* Prism.js custom overrides */
-        .code-block pre code {
-            color: #1e293b;
-        }
-
-        .code-block .token.keyword {
-            color: #d97706;
-        }
-
-        .code-block .token.string {
-            color: #059669;
-        }
-
-        .code-block .token.comment {
-            color: #6b7280;
-        }
-
-        .code-block .token.function {
-            color: #4f46e5;
-        }
-
-        .dark-mode .code-block pre code {
-            color: #e2e8f0;
-        }
-
-        .dark-mode .code-block .token.keyword {
-            color: #f59e0b;
-        }
-
-        .dark-mode .code-block .token.string {
-            color: #10b981;
-        }
-
-        .dark-mode .code-block .token.comment {
-            color: #9ca3af;
-        }
-
-        .dark-mode .code-block .token.function {
-            color: #818cf8;
         }
 
         .input-area {
             padding: 1rem;
-            border-top: 1px solid var(--border-color);
-            background: #ffffff;
-            border-bottom-left-radius: 16px;
-            border-bottom-right-radius: 16px;
-            transition: background-color 0.3s, border-color 0.3s;
+            border-top: 1px solid var(--border);
+            background-color: var(--primary-bg);
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
         }
 
-        .dark-mode .input-area {
-            background: var(--dark-secondary);
-            border-top-color: #4b5563;
+        .dark .input-area {
+            background-color: var(--dark-secondary-bg);
+            border-top-color: var(--dark-border);
         }
 
         .input-area form {
             display: flex;
-            gap: 0.75rem;
-            align-items: center;
+            gap: 0.5rem;
         }
 
         .input-area input {
             flex: 1;
-            border-radius: 9999px;
-            border: 1px solid var(--border-color);
-            padding: 0.6rem 1rem;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
             font-size: 0.9rem;
-            transition: border-color 0.2s, background-color 0.3s;
+            background-color: var(--secondary-bg);
         }
 
-        .dark-mode .input-area input {
-            border-color: #4b5563;
-            background-color: #374151;
+        .dark .input-area input {
+            background-color: var(--dark-border);
+            border-color: var(--dark-border);
             color: var(--dark-text);
         }
 
-        .input-area input:focus, .search-bar input:focus, button:focus {
-            border-color: var(--primary-color);
-            outline: 2px solid var(--primary-color);
-            outline-offset: 2px;
+        .input-area input:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
         }
 
         .input-area button {
-            border-radius: 9999px;
-            background: var(--primary-color);
-            border: none;
-            padding: 0.6rem 1.5rem;
-            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--accent);
             color: white;
-            transition: background 0.2s;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
             font-size: 0.9rem;
         }
 
         .input-area button:hover {
-            background: #ea580c;
+            background-color: var(--accent-hover);
         }
-
-        .loader {
-            display: inline-flex;
-            gap: 0.5rem;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            background: var(--primary-color);
-            border-radius: 50%;
-            animation: bounce 0.6s infinite alternate;
-        }
-
-        .dot:nth-child(2) { animation-delay: 0.2s; }
-        .dot:nth-child(3) { animation-delay: 0.4s; }
 
         .sidebar-toggle {
             position: fixed;
             top: 1rem;
             left: 1rem;
             z-index: 1001;
-            background: var(--primary-color);
+            background-color: var(--accent);
+            color: white;
             border: none;
             border-radius: 8px;
-            padding: 0.6rem;
-            color: white;
-            cursor: pointer;
-            transition: left 0.3s ease-in-out, background 0.2s;
-        }
-
-        .sidebar-toggle:hover {
-            background: #ea580c;
+            padding: 0.5rem;
+            transition: left 0.3s ease, background-color 0.2s;
         }
 
         .sidebar-toggle[aria-expanded="true"] {
-            left: 310px;
+            left: 270px;
+        }
+
+        .sidebar-toggle:hover {
+            background-color: var(--accent-hover);
         }
 
         .overlay {
@@ -600,102 +528,39 @@
             position: fixed;
             bottom: 1rem;
             right: 1rem;
-            z-index: 1002;
-            background: #ffffff;
-            border: 1px solid var(--border-color);
-            padding: 0.6rem 1.2rem;
+            background-color: var(--primary-bg);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
             border-radius: 8px;
             opacity: 0;
             transition: opacity 0.3s;
             font-size: 0.85rem;
-            color: var(--text-color);
-        }
-
-        .dark-mode .toast {
-            background: var(--dark-secondary);
-            border-color: #4b5563;
-            color: var(--dark-text);
+            z-index: 1002;
         }
 
         .toast.show {
             opacity: 1;
         }
 
-        .message-content h1, .message-content h2, .message-content h3 {
-            margin: 0.5rem 0;
-            font-weight: 600;
-            color: var(--text-color);
-        }
-
-        .dark-mode .message-content h1, .dark-mode .message-content h2, .dark-mode .message-content h3 {
+        .dark .toast {
+            background-color: var(--dark-secondary-bg);
+            border-color: var(--dark-border);
             color: var(--dark-text);
         }
 
-        .message-content h1 {
-            font-size: 1.3rem;
-        }
-
-        .message-content h2 {
-            font-size: 1.1rem;
-        }
-
-        .message-content h3 {
-            font-size: 0.95rem;
-        }
-
-        .message-content p {
-            margin: 0.5rem 0;
-        }
-
-        .message-content ul, .message-content ol {
-            margin: 0.5rem 0;
-            padding-left: 1rem;
-        }
-
-        .message-content li {
-            margin-bottom: 0.25rem;
-        }
-
-        .message-content a {
-            color: var(--primary-color);
-            text-decoration: underline;
-            transition: color 0.2s;
-        }
-
-        .message-content a:hover {
-            color: #ea580c;
-        }
-
-        .dark-mode .message-content a {
-            color: #f97316;
-        }
-
-        .dark-mode .message-content a:hover {
-            color: #fb923c;
-        }
-
-        .message-content strong {
-            font-weight: 700;
-        }
-
-        .message-content em {
-            font-style: italic;
-        }
-
-        @media (max-width: 767px) {
-            body {
-                font-size: 0.9rem;
-            }
-
+        @media (max-width: 768px) {
             .sidebar {
-                transform: translateX(-300px);
                 width: 80%;
-                max-width: 300px;
-                padding: 0.75rem;
+                max-width: 260px;
+                transform: translateX(-260px);
             }
 
             .sidebar-open {
                 transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0 !important;
             }
 
             .chat-container {
@@ -703,175 +568,106 @@
                 height: calc(100vh - 1rem);
             }
 
-            .main-content {
-                margin-left: 0 !important;
+            .sidebar-header h2 {
+                font-size: 1.1rem;
             }
 
-            .sidebar h5 {
-                font-size: 1rem;
+            .theme-toggle button {
+                font-size: 1.1rem;
             }
 
-            .search-bar input {
-                font-size: 0.85rem;
-                padding: 0.4rem 0.8rem;
-            }
-
-            .new-chat-btn, .clear-history-btn {
+            .search-bar input, .btn-primary, .btn-danger, .chat-history-item, .input-area input, .input-area button {
                 font-size: 0.85rem;
                 padding: 0.5rem;
             }
 
-            .chat-history-item {
-                font-size: 0.8rem;
-                padding: 0.5rem;
+            .chat-history-item i {
+                font-size: 0.9rem;
             }
 
-            .chat-box {
-                padding: 1rem;
-            }
-
-            .welcome-message {
+            .message-content, .welcome-message p, .code-block {
                 font-size: 0.85rem;
-                padding: 1rem;
             }
 
-            .message-content {
-                font-size: 0.85rem;
-                padding: 0.6rem 1.2rem 0.6rem 0.8rem;
+            .welcome-message h1 {
+                font-size: 1.5rem;
             }
 
             .avatar {
-                width: 28px;
-                height: 28px;
-                font-size: 0.8rem;
+                width: 32px;
+                height: 32px;
+                font-size: 0.85rem;
             }
 
             .timestamp {
                 font-size: 0.7rem;
             }
-
-            .input-area {
-                padding: 0.75rem;
-            }
-
-            .input-area input {
-                font-size: 0.85rem;
-                padding: 0.5rem 0.8rem;
-            }
-
-            .input-area button {
-                font-size: 0.85rem;
-                padding: 0.5rem 1.2rem;
-            }
-
-            .code-block {
-                font-size: 0.85rem;
-                padding: 0.75rem;
-                max-height: auto;
-            }
-        }
-
-        @media (min-width: 768px) {
-            .sidebar {
-                transform: translateX(-300px);
-            }
-
-            .sidebar-open {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-left: 0;
-                transition: margin-left 0.3s ease-in-out;
-            }
-
-            .main-content.sidebar-expanded {
-                margin-left: 300px;
-            }
-
-            .chat-container {
-                margin-left: auto;
-                margin-right: auto;
-            }
-        }
-
-        @keyframes bounce {
-            to { transform: translateY(-6px); }
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(12px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
         }
     </style>
 </head>
 <body>
-    <button class="sidebar-toggle" aria-expanded="false" aria-label="Toggle Sidebar" data-bs-toggle="tooltip" data-bs-placement="right" title="Toggle Sidebar">
-        <i class="bi bi-list"></i>
+    <button class="sidebar-toggle" aria-expanded="false" aria-label="Toggle Sidebar">
+        <i class="ri-menu-line"></i>
     </button>
     <div class="overlay" id="overlay"></div>
     <div class="toast" id="toast">Text copied to clipboard!</div>
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="sidebar" id="sidebar">
-                <h5>Chat History</h5>
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar sidebar-hidden" id="sidebar">
+            <div class="sidebar-header">
+                <h2>YHA - AI</h2>
                 <div class="theme-toggle">
                     <button onclick="toggleTheme()" aria-label="Toggle Theme">
-                        <i class="bi bi-moon-stars"></i>
+                        <i class="ri-moon-line"></i>
                     </button>
-                    <span>Dark Mode</span>
                 </div>
-                <div class="search-bar">
-                    <input type="text" id="searchHistory" placeholder="Search chats..." oninput="filterChats()" aria-label="Search chat history">
-                </div>
-                <button class="btn btn-primary new-chat-btn" onclick="newChat()">New Chat</button>
-                <button class="btn clear-history-btn" onclick="confirmClearHistory()">Clear History</button>
-                <div id="chatHistory"></div>
             </div>
-            <!-- Main Chat Area -->
-            <div class="col-12 main-content" id="mainContent">
-                <div class="chat-container">
-                    <div class="chat-box" id="chatBox">
-                        <div class="welcome-message" id="welcomeMessage"></div>
-                    </div>
-                    <div class="input-area">
-                        <form onsubmit="sendMessage(); return false;" role="form">
-                            <input type="text" id="userInput" class="form-control" placeholder="Ask me anything..." aria-label="Message input" />
-                            <button type="submit" class="btn btn-primary" aria-label="Send message">Send</button>
-                        </form>
-                    </div>
+            <div class="search-bar mb-4">
+                <input type="text" id="searchHistory" placeholder="Search chats..." oninput="filterChats()" aria-label="Search chat history">
+            </div>
+            <button class="btn-primary mb-2" onclick="newChat()">New Chat</button>
+            <button class="btn-danger mb-4" onclick="confirmClearHistory()">Clear History</button>
+            <div id="chatHistory"></div>
+        </div>
+        <!-- Main Chat Area -->
+        <div class="main-content flex-1" id="mainContent">
+            <div class="chat-container">
+                <div class="chat-box" id="chatBox">
+                    <div class="welcome-message" id="welcomeMessage"></div>
+                </div>
+                <div class="input-area">
+                    <form onsubmit="sendMessage(); return false;" role="form">
+                        <input type="text" id="userInput" placeholder="Ask me anything..." aria-label="Message input" />
+                        <button type="submit" aria-label="Send message">
+                            <i class="ri-send-plane-2-line"></i>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS and Popper.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
     <!-- Prism.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
     <script>
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
         let conversations = [];
         let currentConversationId = null;
         let sidebarState = localStorage.getItem("sidebarState") === "open";
-        let isToggling = false;
 
-        const WELCOME_MESSAGE = `# Welcome to **YHA - AI**!
+        const WELCOME_MESSAGE = `# Welcome to **YHA - AI**
 
-Ready to dive into the world of AI and computer science? I'm here to help you explore, learn, and code smarter. Here's how we can get started:
+Your smart assistant for coding, learning, and exploring AI. Ask anything, from programming questions to AI concepts, and get clear, tailored responses.
 
-- **Ask Questions**: From algorithms to machine learning, I'm ready to explain complex concepts in simple terms.
-- **Code with Confidence**: Need help debugging, understanding code, or writing programs? Share your queries!
-- **Explore AI**: Learn how AI works, experiment with prompts, or even build your own AI projects.
+- **Ask Questions**: Get explanations on algorithms, AI, or any tech topic.
+- **Code with Ease**: Debug, write, or understand code with step-by-step guidance.
+- **Explore AI**: Experiment with prompts and learn cutting-edge concepts.
 
-**Let's get started!** Type your question or task below, and let's code the future together!`;
+**Start now!** Type your question below to begin.`;
 
         try {
             const storedConversations = localStorage.getItem("conversations");
@@ -880,19 +676,6 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             console.error("Failed to parse conversations from localStorage:", e);
             conversations = [];
             localStorage.setItem("conversations", JSON.stringify(conversations));
-        }
-
-        function debounce(func, wait) {
-            let timeout;
-            return function (...args) {
-                if (isToggling) return;
-                isToggling = true;
-                clearTimeout(timeout);
-                timeout = setTimeout(() => {
-                    func.apply(this, args);
-                    isToggling = false;
-                }, wait);
-            };
         }
 
         function toggleSidebar() {
@@ -907,7 +690,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
                 sidebar.classList.add("sidebar-hidden");
                 mainContent.classList.remove("sidebar-expanded");
                 toggleBtn.setAttribute("aria-expanded", "false");
-                toggleBtn.querySelector("i").classList.replace("bi-x", "bi-list");
+                toggleBtn.querySelector("i").classList.replace("ri-close-line", "ri-menu-line");
                 overlay.classList.remove("overlay-active");
                 sidebarState = false;
             } else {
@@ -915,32 +698,24 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
                 sidebar.classList.remove("sidebar-hidden");
                 mainContent.classList.add("sidebar-expanded");
                 toggleBtn.setAttribute("aria-expanded", "true");
-                toggleBtn.querySelector("i").classList.replace("bi-list", "bi-x");
+                toggleBtn.querySelector("i").classList.replace("ri-menu-line", "ri-close-line");
                 overlay.classList.add("overlay-active");
                 sidebarState = true;
             }
 
             localStorage.setItem("sidebarState", sidebarState ? "open" : "closed");
-            const tooltip = bootstrap.Tooltip.getInstance(toggleBtn) || new bootstrap.Tooltip(toggleBtn);
-            tooltip.update();
         }
 
-        const debouncedToggleSidebar = debounce(toggleSidebar, 300);
-
         function toggleTheme() {
-            document.body.classList.toggle("dark-mode");
+            document.body.classList.toggle("dark");
             const themeIcon = document.querySelector(".theme-toggle i");
-            themeIcon.classList.toggle("bi-moon-stars");
-            themeIcon.classList.toggle("bi-sun");
-            const isDarkMode = document.body.classList.contains("dark-mode");
+            themeIcon.classList.toggle("ri-moon-line");
+            themeIcon.classList.toggle("ri-sun-line");
+            const isDarkMode = document.body.classList.contains("dark");
             localStorage.setItem("theme", isDarkMode ? "dark" : "light");
-
-            // Switch Prism.js theme
             document.getElementById("prism-theme-light").disabled = isDarkMode;
             document.getElementById("prism-theme-dark").disabled = !isDarkMode;
-
-            // Re-highlight code blocks
-            requestAnimationFrame(() => Prism.highlightAll());
+            Prism.highlightAll();
         }
 
         function showToast(message) {
@@ -992,7 +767,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             parts.forEach(part => {
                 if (part.type === "code") {
                     const escapedCode = escapeHtml(part.content);
-                    formattedContent += `<div class="code-block"><pre class="line-numbers"><code class="language-${part.language}">${escapedCode}</code></pre><button class="copy-btn" aria-label="Copy code"><i class="bi bi-clipboard"></i></button></div>`;
+                    formattedContent += `<div class="code-block"><pre class="line-numbers"><code class="language-${part.language}">${escapedCode}</code></pre><button class="copy-btn" aria-label="Copy code"><i class="ri-file-copy-line"></i></button></div>`;
                 } else {
                     let text = escapeHtml(part.content);
                     text = text.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>')
@@ -1006,11 +781,9 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
                               .replace(/(<li>.+<\/li>)(?=(?:<li>|$))/gs, '<ol>$1</ol>')
                               .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
                               .replace(/(?<!\n)\n(?!\n)/g, '<br>');
-                    formattedContent += `<p>${text}</p>`;
+                    formattedContent += `<div class="message-text">${text}</div>`;
                 }
             });
-
-            formattedContent = formattedContent.replace(/<p>\s*<\/p>/g, '');
             return formattedContent;
         }
 
@@ -1040,37 +813,26 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
                 timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 contentDiv.appendChild(timestamp);
 
-                const buttonGroup = document.createElement("div");
-                buttonGroup.className = "button-group";
-
                 const copyBtn = document.createElement("button");
                 copyBtn.className = "copy-btn";
-                copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
+                copyBtn.innerHTML = '<i class="ri-file-copy-line"></i>';
                 copyBtn.setAttribute("aria-label", "Copy message");
                 copyBtn.onclick = () => {
                     navigator.clipboard.writeText(content).then(() => {
-                        copyBtn.innerHTML = '<i class="bi bi-clipboard-check"></i>';
+                        copyBtn.innerHTML = '<i class="ri-file-copy-fill"></i>';
                         showToast("Text copied to clipboard!");
-                        setTimeout(() => copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>', 2000);
+                        setTimeout(() => copyBtn.innerHTML = '<i class="ri-file-copy-line"></i>', 2000);
                     }).catch(() => {
                         showToast("Failed to copy text!");
                     });
                 };
-                buttonGroup.appendChild(copyBtn);
+                contentDiv.appendChild(copyBtn);
 
-                contentDiv.appendChild(buttonGroup);
-
-                requestAnimationFrame(() => {
-                    Prism.highlightAllUnder(messageDiv);
-                    const codeBlocks = messageDiv.querySelectorAll('.code-block');
-                    codeBlocks.forEach(block => {
-                        const pre = block.querySelector('pre');
-                        if (pre.scrollHeight > pre.clientHeight) {
-                            block.classList.add('scrollable');
-                        }
-                        const copyBtn = block.querySelector('.copy-btn');
-                        copyBtn.onclick = () => copyCode(block.querySelector('code').textContent);
-                    });
+                Prism.highlightAllUnder(messageDiv);
+                const codeBlocks = messageDiv.querySelectorAll('.code-block');
+                codeBlocks.forEach(block => {
+                    const copyBtn = block.querySelector('.copy-btn');
+                    copyBtn.onclick = () => copyCode(block.querySelector('code').textContent);
                 });
             }
 
@@ -1078,7 +840,6 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             messageDiv.appendChild(contentDiv);
             chatBox.appendChild(messageDiv);
             chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
-
             return messageDiv;
         }
 
@@ -1105,18 +866,13 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             const loadingMessage = addMessage("", false, true);
 
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyDxOoWvmAjmiB286W5A_q7ZyE04pWSuwKE`, {
+                const response = await fetch(`${API_URL}?key=AIzaSyDxOoWvmAjmiB286W5A_q7ZyE04pWSuwKE`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ contents: currentConversation.messages }),
+                    body: JSON.stringify({ contents: currentConversation.messages })
                 });
 
-                if (!response.ok) {
-                    if (response.status === 403) throw new Error("Invalid API key or access denied.");
-                    if (response.status === 429) throw new Error("Rate limit exceeded. Please try again later.");
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 const data = await response.json();
                 if (data.error) throw new Error(data.error.message);
 
@@ -1128,32 +884,26 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
                 timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 loadingMessage.querySelector(".message-content").appendChild(timestamp);
 
-                const buttonGroup = document.createElement("div");
-                buttonGroup.className = "button-group";
-
                 const copyBtn = document.createElement("button");
                 copyBtn.className = "copy-btn";
-                copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
+                copyBtn.innerHTML = '<i class="ri-file-copy-line"></i>';
                 copyBtn.setAttribute("aria-label", "Copy message");
                 copyBtn.onclick = () => {
                     navigator.clipboard.writeText(botResponse).then(() => {
-                        copyBtn.innerHTML = '<i class="bi bi-clipboard-check"></i>';
+                        copyBtn.innerHTML = '<i class="ri-file-copy-fill"></i>';
                         showToast("Text copied to clipboard!");
-                        setTimeout(() => copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>', 2000);
+                        setTimeout(() => copyBtn.innerHTML = '<i class="ri-file-copy-line"></i>', 2000);
                     }).catch(() => {
                         showToast("Failed to copy text!");
                     });
                 };
-                buttonGroup.appendChild(copyBtn);
-
-                loadingMessage.querySelector(".message-content").appendChild(buttonGroup);
+                loadingMessage.querySelector(".message-content").appendChild(copyBtn);
 
                 currentConversation.messages.push({ role: "model", parts: [{ text: botResponse }] });
                 localStorage.setItem("conversations", JSON.stringify(conversations));
-                requestAnimationFrame(() => Prism.highlightAllUnder(loadingMessage));
+                Prism.highlightAllUnder(loadingMessage);
             } catch (error) {
-                let errorMessage = `Error: ${error.message || "Unable to get response. Please try again."}`;
-                loadingMessage.querySelector(".message-text").innerHTML = 'Need to connect your VPN to get access to YHA - AI';
+                loadingMessage.querySelector(".message-text").innerHTML = `Error: ${error.message || "Unable to get response. Please try again."}`;
                 loadingMessage.classList.remove("loading");
                 const timestamp = document.createElement("div");
                 timestamp.className = "timestamp";
@@ -1175,15 +925,15 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             const chatHistory = document.getElementById("chatHistory");
             const historyItem = document.createElement("div");
             historyItem.className = `chat-history-item ${conv.id === currentConversationId ? "active" : ""}`;
-            historyItem.innerHTML = `<i class="bi bi-chat-left-text"></i><span>${conv.title}</span>`;
+            historyItem.innerHTML = `<i class="ri-chat-3-line"></i><span>${conv.title}</span>`;
             historyItem.onclick = () => {
                 loadConversation(conv.id);
-                if (window.innerWidth <= 767) debouncedToggleSidebar();
+                if (window.innerWidth <= 768) toggleSidebar();
             };
 
             const editBtn = document.createElement("button");
             editBtn.className = "edit-title";
-            editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
+            editBtn.innerHTML = '<i class="ri-pencil-line"></i>';
             editBtn.setAttribute("aria-label", "Edit chat title");
             editBtn.onclick = (e) => {
                 e.stopPropagation();
@@ -1199,10 +949,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             const input = document.createElement("input");
             input.type = "text";
             input.value = conv.title;
-            input.style.width = "80%";
-            input.style.padding = "0.25rem";
-            input.style.borderRadius = "4px";
-            input.style.border = "1px solid var(--border-color)";
+            input.className = "w-full p-1 border border-gray-300 dark:border-gray-600 rounded";
             span.replaceWith(input);
             input.focus();
 
@@ -1260,12 +1007,12 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             document.getElementById("userInput").value = "";
             document.getElementById("userInput").focus();
             updateChatHistory();
-            if (window.innerWidth <= 767) debouncedToggleSidebar();
+            if (window.innerWidth <= 768) toggleSidebar();
         }
 
         window.onload = () => {
             if (localStorage.getItem("theme") === "dark") toggleTheme();
-            if (sidebarState) debouncedToggleSidebar();
+            if (sidebarState) toggleSidebar();
             updateChatHistory();
             if (conversations.length > 0) {
                 loadConversation(conversations[conversations.length - 1].id);
@@ -1275,24 +1022,21 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
                 welcomeMessageDiv.className = "welcome-message";
                 welcomeMessageDiv.id = "welcomeMessage";
                 welcomeMessageDiv.innerHTML = formatMessage(WELCOME_MESSAGE);
-                chatBox.innerHTML = "";
                 chatBox.appendChild(welcomeMessageDiv);
                 document.getElementById("userInput").focus();
             }
-            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-            tooltipTriggerList.forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
         };
 
         document.addEventListener("keydown", (e) => {
-            if (e.key === "Escape" && sidebarState) debouncedToggleSidebar();
+            if (e.key === "Escape" && sidebarState) toggleSidebar();
             if (e.key === "Enter" && document.activeElement.id === "userInput") {
                 sendMessage();
                 e.preventDefault();
             }
         });
 
-        document.querySelector(".sidebar-toggle").onclick = debouncedToggleSidebar;
-        document.getElementById("overlay").onclick = debouncedToggleSidebar;
+        document.querySelector(".sidebar-toggle").onclick = toggleSidebar;
+        document.getElementById("overlay").onclick = toggleSidebar;
     </script>
 </body>
 </html>

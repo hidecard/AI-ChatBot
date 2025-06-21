@@ -16,6 +16,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet" />
     <style>
         :root {
+            --sidebar-width: 280px;
             --primary-color: #f97316;
             --secondary-color: #fff7ed;
             --text-color: #1e293b;
@@ -37,7 +38,7 @@
             overflow: hidden;
             color: var(--text-color);
             transition: background-color 0.3s, color 0.3s;
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
 
         body.dark-mode {
@@ -51,11 +52,11 @@
         }
 
         .auth-container {
-            max-width: 450px;
-            margin: 5vh auto;
-            padding: 2rem;
+            max-width: 400px;
+            margin: 10vh auto;
+            padding: 1.5rem;
             background-color: white;
-            border-radius: 12px;
+            border-radius: 16px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
             transition: all 0.3s ease;
         }
@@ -166,15 +167,19 @@
         }
 
         .sidebar {
-            height: 100vh;
-            width: 300px;
+            width: var(--sidebar-width);
             background-color: #ffffff;
             border-right: 1px solid var(--border-color);
-            padding: 1rem;
-            overflow-y: auto;
+            padding: 1.5rem 1rem;
             transition: transform 0.3s ease-in-out, background-color 0.3s;
             position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
             z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
 
         .dark-mode .sidebar {
@@ -183,17 +188,29 @@
         }
 
         .sidebar-hidden {
-            transform: translateX(-300px);
+            transform: translateX(calc(-1 * var(--sidebar-width)));
         }
 
         .sidebar-open {
             transform: translateX(0);
         }
 
-        .sidebar h5 {
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            font-size: 1.1rem;
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-header h5 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .dark-mode .sidebar-header h5 {
+            color: #fb923c;
         }
 
         .search-bar {
@@ -216,14 +233,14 @@
         }
 
         .new-chat-btn, .clear-history-btn, .logout-btn {
-            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
             border: none;
-            padding: 0.6rem;
-            font-weight: 600;
             border-radius: 8px;
             transition: background 0.2s, color 0.2s;
-            margin-bottom: 0.75rem;
-            font-size: 0.9rem;
         }
 
         .new-chat-btn {
@@ -273,35 +290,41 @@
             color: var(--dark-text);
         }
 
+        .chat-history {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
         .chat-history-item {
             display: flex;
             align-items: center;
-            padding: 0.6rem;
+            padding: 0.75rem;
             border-radius: 8px;
             cursor: pointer;
             margin-bottom: 0.5rem;
             transition: background 0.2s, color 0.2s;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             position: relative;
+            background-color: transparent;
         }
 
         .chat-history-item:hover, .chat-history-item.active {
             background-color: var(--secondary-color);
-            color: var(--text-color);
         }
 
         .dark-mode .chat-history-item:hover, .dark-mode .chat-history-item.active {
             background-color: #4b5563;
-            color: var(--dark-text);
         }
 
         .chat-history-item i {
-            margin-right: 0.6rem;
+            margin-right: 0.75rem;
             color: var(--accent-color);
+            font-size: 1rem;
         }
 
         .dark-mode .chat-history-item i {
-            color: #f97316;
+            color: #fb923c;
         }
 
         .edit-title {
@@ -312,6 +335,7 @@
             position: absolute;
             right: 0.5rem;
             transition: opacity 0.2s, color 0.2s;
+            font-size: 0.9rem;
         }
 
         .chat-history-item:hover .edit-title {
@@ -324,7 +348,7 @@
 
         .chat-container {
             height: calc(100vh - 2rem);
-            max-width: 1000px;
+            max-width: 900px;
             margin: 1rem auto;
             border-radius: 16px;
             background: white;
@@ -443,7 +467,7 @@
         .timestamp {
             font-size: 0.75rem;
             color: #ffffff;
- ngon: right;
+            text-align: right;
         }
 
         .user-message .timestamp {
@@ -654,7 +678,7 @@
             border-radius: 9999px;
             background: var(--primary-color);
             border: none;
-            padding: 0.6rem 1.5rem;
+            padding: 0.6rem 1rem;
             font-weight: 600;
             color: white;
             transition: background 0.2s;
@@ -700,7 +724,7 @@
         }
 
         .sidebar-toggle[aria-expanded="true"] {
-            left: 310px;
+            left: calc(var(--sidebar-width) + 1rem);
         }
 
         .overlay {
@@ -804,34 +828,39 @@
             font-style: italic;
         }
 
+        .main-content {
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .main-content.sidebar-open {
+            margin-left: var(--sidebar-width);
+        }
+
+        .main-content.sidebar-hidden {
+            margin-left: 0;
+        }
+
         @media (max-width: 767px) {
             body {
                 font-size: 0.9rem;
             }
 
             .sidebar {
-                transform: translateX(-300px);
-                width: 80%;
-                max-width: 300px;
-                padding: 0.75rem;
+                width: 75%;
+                max-width: var(--sidebar-width);
             }
 
-            .sidebar-open {
-                transform: translateX(0);
+            .sidebar-toggle[aria-expanded="true"] {
+                left: calc(75% + 1rem);
             }
 
-            .chat-container {
-                margin: 0.5rem;
-                height: calc(100vh - 1rem);
-            }
-
-            .main-content {
-                margin-left: 0 !important;
+            .main-content.sidebar-open {
+                margin-left: 0;
             }
 
             .auth-container {
-                margin: 10vh 1rem;
-                padding: 1.5rem;
+                margin: 5vh 1rem;
+                padding: 1rem;
                 max-width: 100%;
             }
 
@@ -839,7 +868,7 @@
                 font-size: 1.5rem;
             }
 
-            .sidebar h5 {
+            .sidebar-header h5 {
                 font-size: 1rem;
             }
 
@@ -850,7 +879,7 @@
 
             .new-chat-btn, .clear-history-btn, .logout-btn {
                 font-size: 0.85rem;
-                padding: 0.5rem;
+                padding: 0.5rem 0.8rem;
             }
 
             .chat-history-item {
@@ -893,41 +922,13 @@
 
             .input-area button {
                 font-size: 0.85rem;
-                padding: 0.5rem 1.2rem;
+                padding: 0.5rem 1rem;
             }
 
             .code-block {
                 font-size: 0.85rem;
                 padding: 0.75rem;
                 max-height: auto;
-            }
-        }
-
-        @media (min-width: 768px) {
-            .sidebar {
-                transform: translateX(0);
-            }
-
-            .sidebar-hidden {
-                transform: translateX(-300px);
-            }
-
-            .sidebar-open {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-left: 300px;
-                transition: margin-left 0.3s ease-in-out;
-            }
-
-            .main-content.sidebar-hidden {
-                margin-left: 0;
-            }
-
-            .chat-container {
-                margin-left: auto;
-                margin-right: auto;
             }
         }
 
@@ -951,7 +952,12 @@
         <div class="row">
             <!-- Sidebar -->
             <div class="sidebar sidebar-open" id="sidebar">
-                <h5>Chat History</h5>
+                <div class="sidebar-header">
+                    <h5>YHA - AI</h5>
+                    <button class="btn new-chat-btn" id="newChatBtn">
+                        <i class="bi bi-plus-circle"></i> New Chat
+                    </button>
+                </div>
                 <div class="theme-toggle">
                     <button id="themeToggleBtn" aria-label="Toggle Theme">
                         <i class="bi bi-moon-stars"></i>
@@ -961,10 +967,13 @@
                 <div class="search-bar">
                     <input type="text" id="searchHistory" placeholder="Search chats..." aria-label="Search chat history">
                 </div>
-                <button class="btn new-chat-btn" id="newChatBtn">New Chat</button>
-                <button class="btn clear-history-btn" id="clearHistoryBtn">Clear History</button>
-                <button class="btn logout-btn" id="logoutBtn">Logout</button>
-                <div id="chatHistory"></div>
+                <button class="btn clear-history-btn" id="clearHistoryBtn">
+                    <i class="bi bi-trash"></i> Clear History
+                </button>
+                <button class="btn logout-btn" id="logoutBtn">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </button>
+                <div id="chatHistory" class="chat-history"></div>
             </div>
             <!-- Main Content -->
             <div class="col-12 main-content sidebar-open" id="mainContent">
@@ -1001,7 +1010,9 @@
                     <div class="input-area">
                         <form id="messageForm" role="form">
                             <input type="text" id="userInput" class="form-control" placeholder="Ask me anything..." aria-label="Message input" />
-                            <button type="submit" class="btn btn-primary" aria-label="Send message">Send</button>
+                            <button type="submit" class="btn btn-primary" aria-label="Send message">
+                                <i class="bi bi-send"></i>
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -1009,47 +1020,45 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-        import { getDatabase, ref, set, get, push, remove } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+    // Firebase imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { getDatabase, ref, set, get, push, remove } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAMwEfmH2BCa-8Kf4X2eodVfVxnEVq9YV0",
-            authDomain: "mchat-8d6ef.firebaseapp.com",
-            databaseURL: "https://mchat-8d6ef.firebaseio.com",
-            projectId: "mchat-8d6ef",
-            storageBucket: "mchat-8d6ef.appspot.com",
-            messagingSenderId: "624124730943",
-            appId: "1:624124730943:web:0a8738bb556f085fcc228a",
-            measurementId: "G-B3M69NWSE2"
-        };
+    // Bootstrap and Prism.js imports
+    import "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js";
+    import "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js";
+    import "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js";
+    import "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js";
+    import "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js";
+    import "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js";
+    import "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js";
+    import "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js";
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getDatabase(app);
+    const firebaseConfig = {
+        apiKey: "AIzaSyAMwEfmH2BCa-8Kf4X2eodVfVxnEVq9YV0",
+        authDomain: "mchat-8d6ef.firebaseapp.com",
+        databaseURL: "https://mchat-8d6ef.firebaseio.com",
+        projectId: "mchat-8d6ef",
+        storageBucket: "mchat-8d6ef.appspot.com",
+        messagingSenderId: "624124730943",
+        appId: "1:624124730943:web:0a8738bb556f085fcc228a",
+        measurementId: "G-B3M69NWSE2"
+    };
 
-        // Bootstrap and Prism.js
-        import "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js";
-        import "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js";
-        import "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js";
-        import "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js";
-        import "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js";
-        import "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js";
-        import "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js";
-        import "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js";
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
 
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
-        let conversations = [];
-        let currentConversationId = null;
-        let sidebarState = localStorage.getItem("sidebarState") === "open";
-        let isToggling = false;
-        const QUESTION_LIMIT = 5;
+    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
+    let conversations = [];
+    let currentConversationId = null;
+    let sidebarState = localStorage.getItem("sidebarState") === "open" || false;
+    let isToggling = false;
+    const QUESTION_LIMIT = 5;
 
-        const WELCOME_MESSAGE = `# Welcome to **YHA - AI**!
+    const WELCOME_MESSAGE = `# Welcome to **YHA - AI**!
 
 Ready to dive into the world of AI and computer science? I'm here to help you explore, learn, and code smarter. Here's how we can get started:
 
@@ -1058,616 +1067,596 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
 - **Explore AI**: Learn how AI works, experiment with prompts, or even build your own AI projects.
 `;
 
-        // Utility Functions
-        function showToast(message) {
-            const toast = document.getElementById("toast");
-            toast.textContent = message;
-            toast.classList.add("show");
-            setTimeout(() => toast.classList.remove("show"), 2000);
-        }
+    // Utility Functions
+    function showToast(message) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2000);
+    }
 
-        function escapeHtml(text) {
-            const div = document.createElement("div");
-            div.textContent = text;
-            return div.innerHTML;
-        }
+    function escapeHtml(text) {
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+    }
 
-        function copyCode(content) {
-            navigator.clipboard.writeText(content).then(() => {
-                showToast("Code copied to clipboard!");
-            }).catch(() => {
-                showToast("Failed to copy code!");
-            });
-        }
+    function copyCode(content) {
+        navigator.clipboard.writeText(content).then(() => {
+            showToast("Code copied to clipboard!");
+        }).catch(() => {
+            showToast("Failed to copy code!");
+        });
+    }
 
-        // UI Toggle Functions
-        function showAuth() {
-            document.getElementById('authContainer').style.display = 'block';
-            document.getElementById('chatContainer').style.display = 'none';
-            document.getElementById('sidebar').style.display = 'block';
-            document.getElementById('sidebar-toggle').style.display = 'block';
-            document.getElementById('userInput').disabled = false;
-            document.querySelector('.input-area button').disabled = false;
-            document.getElementById('authMessage').innerText = '';
-            document.getElementById('mainContent').classList.add('sidebar-open');
-            if (sidebarState) {
-                document.getElementById('sidebar').classList.add('sidebar-open');
-                document.getElementById('sidebar').classList.remove('sidebar-hidden');
-                document.querySelector('.sidebar-toggle').setAttribute('aria-expanded', 'true');
-            } else {
-                document.getElementById('sidebar').classList.add('sidebar-hidden');
-                document.getElementById('sidebar').classList.remove('sidebar-open');
-                document.querySelector('.sidebar-toggle').setAttribute('aria-expanded', 'false');
-            }
+    // UI Toggle Functions
+    function showAuth() {
+        document.getElementById('authContainer').style.display = 'block';
+        document.getElementById('chatContainer').style.display = 'none';
+        document.getElementById('sidebar').style.display = 'block';
+        document.querySelector('.sidebar-toggle').style.display = 'block';
+        document.getElementById('userInput').disabled = false;
+        document.querySelector('.input-area button').disabled = false;
+        document.getElementById('authMessage').innerText = '';
+        updateSidebarState();
+        displayWelcomeMessage();
+    }
+
+    function showChat() {
+        document.getElementById('authContainer').style.display = 'none';
+        document.getElementById('chatContainer').style.display = 'flex';
+        document.getElementById('sidebar').style.display = 'block';
+        document.querySelector('.sidebar-toggle').style.display = 'block';
+        document.getElementById('userInput').disabled = false;
+        document.querySelector('.input-area button').disabled = false;
+        updateChatHistory();
+        if (conversations.length > 0) {
+            loadConversation(conversations[conversations.length - 1].id);
+        } else {
             displayWelcomeMessage();
         }
+        updateSidebarState();
+    }
 
-        function showChat() {
-            document.getElementById('authContainer').style.display = 'none';
-            document.getElementById('chatContainer').style.display = 'flex';
-            document.getElementById('sidebar').style.display = 'block';
-            document.getElementById('sidebar-toggle').style.display = 'block';
-            document.getElementById('userInput').disabled = false;
-            document.querySelector('.input-area button').disabled = false;
-            updateChatHistory();
-            if (conversations.length > 0) {
-                loadConversation(conversations[conversations.length - 1].id);
+    function updateSidebarState() {
+        const sidebar = document.getElementById("sidebar");
+        const mainContent = document.getElementById("mainContent");
+        const toggleBtn = document.querySelector(".sidebar-toggle");
+        const overlay = document.getElementById("overlay");
+
+        if (sidebarState) {
+            sidebar.classList.add("sidebar-open");
+            sidebar.classList.remove("sidebar-hidden");
+            mainContent.classList.add("sidebar-open");
+            toggleBtn.setAttribute("aria-expanded", "true");
+            toggleBtn.querySelector("i").classList.replace("bi-list", "bi-x");
+            overlay.classList.add("overlay-active");
+        } else {
+            sidebar.classList.add("sidebar-hidden");
+            sidebar.classList.remove("sidebar-open");
+            mainContent.classList.remove("sidebar-open");
+            toggleBtn.setAttribute("aria-expanded", "false");
+            toggleBtn.querySelector("i").classList.replace("bi-x", "bi-list");
+            overlay.classList.remove("overlay-active");
+        }
+
+        localStorage.setItem("sidebarState", sidebarState ? "open" : "closed");
+        const tooltip = bootstrap.Tooltip.getInstance(toggleBtn) || new bootstrap.Tooltip(toggleBtn);
+        tooltip.update();
+    }
+
+    function toggleSidebar() {
+        if (isToggling) return;
+        isToggling = true;
+        sidebarState = !sidebarState;
+        updateSidebarState();
+        setTimeout(() => {
+            isToggling = false;
+        }, 300);
+    }
+
+    function debounce(func, wait) {
+        let timeout;
+        return function (...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                func.apply(this, args);
+            }, wait);
+        };
+    }
+
+    const debouncedToggleSidebar = debounce(toggleSidebar, 300);
+
+    // Theme Toggle
+    function toggleTheme() {
+        const isDarkMode = document.body.classList.toggle("dark-mode");
+        const themeIcon = document.querySelector("#themeToggleBtn i");
+        themeIcon.classList.toggle("bi-moon-stars");
+        themeIcon.classList.toggle("bi-sun");
+        localStorage.setItem("theme", isDarkMode ? "dark" : "light");
+        document.getElementById("prism-theme-light").disabled = isDarkMode;
+        document.getElementById("prism-theme-dark").disabled = !isDarkMode;
+        Prism.highlightAll();
+    }
+
+    // Message Formatting
+    function formatMessage(content) {
+        let parts = [];
+        let lastIndex = 0;
+        const codeBlockRegex = /```(\w+)?\n([\s\S]*?)\n```/g;
+        let match;
+
+        while ((match = codeBlockRegex.exec(content)) !== null) {
+            if (match.index > lastIndex) {
+                parts.push({ type: "text", content: content.slice(lastIndex, match.index) });
+            }
+            const language = match[1] ? match[1].toLowerCase() : "text";
+            const langMap = { html: "markup", css: "css", js: "javascript", py: "python" };
+            const prismLang = langMap[language] || "text";
+            parts.push({
+                type: "code",
+                language: prismLang,
+                content: match[2].trim()
+            });
+            lastIndex = match.index + match[0].length;
+        }
+        if (lastIndex < content.length) {
+            parts.push({ type: "text", content: content.slice(lastIndex) });
+        }
+
+        let formattedContent = "";
+        parts.forEach(part => {
+            if (part.type === "code") {
+                const escapedCode = escapeHtml(part.content);
+                formattedContent += `<div class="code-block"><pre class="line-numbers"><code class="language-${part.language}">${escapedCode}</code></pre><button class="copy-btn" aria-label="Copy code"><i class="bi bi-clipboard"></i></button></div>`;
             } else {
-                displayWelcomeMessage();
-            }
-            if (sidebarState) {
-                document.getElementById('sidebar').classList.add('sidebar-open');
-                document.getElementById('sidebar').classList.remove('sidebar-hidden');
-                document.getElementById('mainContent').classList.add('sidebar-open');
-                document.querySelector('.sidebar-toggle').setAttribute('aria-expanded', 'true');
-            } else {
-                document.getElementById('sidebar').classList.add('sidebar-hidden');
-                document.getElementById('sidebar').classList.remove('sidebar-open');
-                document.getElementById('mainContent').classList.remove('sidebar-open');
-                document.querySelector('.sidebar-toggle').setAttribute('aria-expanded', 'false');
-            }
-        }
-
-        function toggleSidebar() {
-            const sidebar = document.getElementById("sidebar");
-            const mainContent = document.getElementById("mainContent");
-            const toggleBtn = document.querySelector(".sidebar-toggle");
-            const overlay = document.getElementById("overlay");
-            const isOpen = sidebar.classList.contains("sidebar-open");
-
-            if (isOpen) {
-                sidebar.classList.remove("sidebar-open");
-                sidebar.classList.add("sidebar-hidden");
-                mainContent.classList.remove("sidebar-open");
-                toggleBtn.setAttribute("aria-expanded", "false");
-                toggleBtn.querySelector("i").classList.replace("bi-x", "bi-list");
-                overlay.classList.remove("overlay-active");
-                sidebarState = false;
-            } else {
-                sidebar.classList.add("sidebar-open");
-                sidebar.classList.remove("sidebar-hidden");
-                mainContent.classList.add("sidebar-open");
-                toggleBtn.setAttribute("aria-expanded", "true");
-                toggleBtn.querySelector("i").classList.replace("bi-list", "bi-x");
-                overlay.classList.add("overlay-active");
-                sidebarState = true;
-            }
-
-            localStorage.setItem("sidebarState", sidebarState ? "open" : "closed");
-            const tooltip = bootstrap.Tooltip.getInstance(toggleBtn) || new bootstrap.Tooltip(toggleBtn);
-            tooltip.update();
-        }
-
-        function debounce(func, wait) {
-            let timeout;
-            return function (...args) {
-                if (isToggling) return;
-                isToggling = true;
-                clearTimeout(timeout);
-                timeout = setTimeout(() => {
-                    func.apply(this, args);
-                    isToggling = false;
-                }, wait);
-            };
-        }
-
-        const debouncedToggleSidebar = debounce(toggleSidebar, 300);
-
-        // Theme Toggle
-        function toggleTheme() {
-            const isDarkMode = document.body.classList.toggle("dark-mode");
-            const themeIcon = document.querySelector("#themeToggleBtn i");
-            themeIcon.classList.toggle("bi-moon-stars");
-            themeIcon.classList.toggle("bi-sun");
-            localStorage.setItem("theme", isDarkMode ? "dark" : "light");
-            document.getElementById("prism-theme-light").disabled = isDarkMode;
-            document.getElementById("prism-theme-dark").disabled = !isDarkMode;
-            Prism.highlightAll();
-        }
-
-        // Message Formatting
-        function formatMessage(content) {
-            let parts = [];
-            let lastIndex = 0;
-            const codeBlockRegex = /```(\w+)?\n([\s\S]*?)\n```/g;
-            let match;
-
-            while ((match = codeBlockRegex.exec(content)) !== null) {
-                if (match.index > lastIndex) {
-                    parts.push({ type: "text", content: content.slice(lastIndex, match.index) });
-                }
-                const language = match[1] ? match[1].toLowerCase() : "text";
-                const langMap = { html: "markup", css: "css", js: "javascript", py: "python" };
-                const prismLang = langMap[language] || "text";
-                parts.push({
-                    type: "code",
-                    language: prismLang,
-                    content: match[2].trim()
-                });
-                lastIndex = match.index + match[0].length;
-            }
-            if (lastIndex < content.length) {
-                parts.push({ type: "text", content: content.slice(lastIndex) });
-            }
-
-            let formattedContent = "";
-            parts.forEach(part => {
-                if (part.type === "code") {
-                    const escapedCode = escapeHtml(part.content);
-                    formattedContent += `<div class="code-block"><pre class="line-numbers"><code class="language-${part.language}">${escapedCode}</code></pre><button class="copy-btn" aria-label="Copy code"><i class="bi bi-clipboard"></i></button></div>`;
-                } else {
-                    let text = escapeHtml(part.content);
-                    text = text.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>')
-                              .replace(/^##\s+(.+)$/gm, '<h2>$1</h2>')
-                              .replace(/^#\s+(.+)$/gm, '<h1>$1</h1>')
-                              .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-                              .replace(/\*(.+?)\*/g, '<em>$1</em>')
-                              .replace(/^(?:-|\*)\s+(.+)$/gm, '<li>$1</li>')
-                              .replace(/(<li>.+<\/li>)(?=(?:<li>|$))/gs, '<ul>$1</ul>')
-                              .replace(/^\d+\.\s+(.+)$/gm, '<li>$1</li>')
-                              .replace(/(<li>.+<\/li>)(?=(?:<li>|$))/gs, '<ol>$1</ol>')
-                              .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
-                              .replace(/(?<!\n)\n(?!\n)/g, '<br>');
-                    formattedContent += `<p>${text}</p>`;
-                }
-            });
-
-            formattedContent = formattedContent.replace(/<p>\s*<\/p>/g, '');
-            return formattedContent;
-        }
-
-        // Add Message to Chat
-        function addMessage(content, isUser, isLoading = false) {
-            const chatBox = document.getElementById("chatBox");
-            const welcomeMessage = document.getElementById("welcomeMessage");
-            if (welcomeMessage) welcomeMessage.remove();
-
-            const messageDiv = document.createElement("div");
-            messageDiv.className = `message ${isUser ? "user-message" : "bot-message"}`;
-            const avatar = document.createElement("div");
-            avatar.className = "avatar";
-            avatar.textContent = isUser ? "U" : "AI";
-
-            const contentDiv = document.createElement("div");
-            contentDiv.className = "message-content";
-
-            const textDiv = document.createElement("div");
-            textDiv.className = "message-text";
-            textDiv.innerHTML = isLoading ? `<span class="loader"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>` : formatMessage(content);
-
-            contentDiv.appendChild(textDiv);
-
-            if (!isLoading) {
-                const timestamp = document.createElement("div");
-                timestamp.className = "timestamp";
-                timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                contentDiv.appendChild(timestamp);
-
-                const buttonGroup = document.createElement("div");
-                buttonGroup.className = "button-group";
-
-                const copyBtn = document.createElement("button");
-                copyBtn.className = "copy-btn";
-                copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
-                copyBtn.setAttribute("aria-label", "Copy message");
-                copyBtn.onclick = () => {
-                    navigator.clipboard.writeText(content).then(() => {
-                        copyBtn.innerHTML = '<i class="bi bi-clipboard-check"></i>';
-                        showToast("Text copied to clipboard!");
-                        setTimeout(() => copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>', 2000);
-                    }).catch(() => {
-                        showToast("Failed to copy text!");
-                    });
-                };
-                buttonGroup.appendChild(copyBtn);
-
-                contentDiv.appendChild(buttonGroup);
-
-                requestAnimationFrame(() => {
-                    Prism.highlightAllUnder(messageDiv);
-                    const codeBlocks = messageDiv.querySelectorAll('.code-block');
-                    codeBlocks.forEach(block => {
-                        const pre = block.querySelector('pre');
-                        if (pre.scrollHeight > pre.clientHeight) {
-                            block.classList.add('scrollable');
-                        }
-                        const copyBtn = block.querySelector('.copy-btn');
-                        copyBtn.onclick = () => copyCode(block.querySelector('code').textContent);
-                    });
-                });
-            }
-
-            messageDiv.appendChild(avatar);
-            messageDiv.appendChild(contentDiv);
-            chatBox.appendChild(messageDiv);
-            chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
-
-            return messageDiv;
-        }
-
-        // Display Welcome Message
-        function displayWelcomeMessage() {
-            const chatBox = document.getElementById("chatBox");
-            chatBox.innerHTML = `<div class="welcome-message" id="welcomeMessage">${formatMessage(WELCOME_MESSAGE)}</div>`;
-            document.getElementById("userInput").value = "";
-            document.getElementById("userInput").focus();
-        }
-
-        // Chat History Management
-        function appendChatHistoryItem(conv) {
-            const chatHistory = document.getElementById("chatHistory");
-            const historyItem = document.createElement("div");
-            historyItem.className = `chat-history-item ${conv.id === currentConversationId ? "active" : ""}`;
-            historyItem.innerHTML = `<i class="bi bi-chat-left-text"></i><span>${conv.title}</span>`;
-            historyItem.onclick = () => {
-                loadConversation(conv.id);
-                if (window.innerWidth <= 767) debouncedToggleSidebar();
-            };
-
-            const editBtn = document.createElement("button");
-            editBtn.className = "edit-title";
-            editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
-            editBtn.setAttribute("aria-label", "Edit chat title");
-            editBtn.onclick = (e) => {
-                e.stopPropagation();
-                editChatTitle(conv, historyItem);
-            };
-            historyItem.appendChild(editBtn);
-
-            chatHistory.appendChild(historyItem);
-        }
-
-        function updateChatHistory() {
-            const chatHistory = document.getElementById("chatHistory");
-            chatHistory.innerHTML = "";
-            conversations
-                .filter(conv => conv.messages && conv.messages.length > 0)
-                .forEach(conv => appendChatHistoryItem(conv));
-        }
-
-        function editChatTitle(conv, historyItem) {
-            const span = historyItem.querySelector("span");
-            const input = document.createElement("input");
-            input.type = "text";
-            input.value = conv.title;
-            input.style.width = "80%";
-            input.style.padding = "0.25rem";
-            input.style.borderRadius = "4px";
-            input.style.border = "1px solid var(--border-color)";
-            span.replaceWith(input);
-            input.focus();
-
-            const saveTitle = async () => {
-                conv.title = input.value.trim() || conv.title;
-                input.replaceWith(span);
-                span.textContent = conv.title;
-                if (auth.currentUser) {
-                    await set(ref(db, 'conversations/' + auth.currentUser.uid + '/' + conv.id), conv);
-                }
-                updateChatHistory();
-            };
-
-            input.addEventListener('blur', saveTitle);
-            input.addEventListener('keypress', (e) => {
-                if (e.key === "Enter") saveTitle();
-            });
-        }
-
-        function filterChats() {
-            const searchTerm = document.getElementById("searchHistory").value.toLowerCase();
-            const chatHistory = document.getElementById("chatHistory");
-            chatHistory.innerHTML = "";
-            conversations
-                .filter(conv => conv.title && conv.title.toLowerCase().includes(searchTerm))
-                .forEach(conv => appendChatHistoryItem(conv));
-        }
-
-        // Conversation Functions
-        async function newChat() {
-            console.log("Starting new chat");
-            currentConversationId = null;
-            updateChatHistory();
-            displayWelcomeMessage();
-            if (window.innerWidth <= 767) debouncedToggleSidebar();
-            showToast("New chat started!");
-        }
-
-        async function loadConversation(id) {
-            console.log("Loading conversation:", id);
-            currentConversationId = id;
-            const chatBox = document.getElementById("chatBox");
-            chatBox.innerHTML = "";
-            const conversation = conversations.find(conv => conv.id === id);
-            if (conversation && conversation.messages) {
-                conversation.messages.forEach(msg => addMessage(msg.parts[0].text, msg.role === "user"));
-            } else {
-                displayWelcomeMessage();
-            }
-            updateChatHistory();
-            document.getElementById("userInput").focus();
-        }
-
-        async function confirmClearHistory() {
-            console.log("Clearing history");
-            if (!confirm("Are you sure you want to clear all chat history?")) return;
-            try {
-                if (auth.currentUser) {
-                    await remove(ref(db, 'conversations/' + auth.currentUser.uid));
-                }
-                conversations = [];
-                currentConversationId = null;
-                updateChatHistory();
-                displayWelcomeMessage();
-                showToast("Chat history cleared!");
-            } catch (error) {
-                console.error("Error clearing history:", error);
-                showToast("Failed to clear history!");
-            }
-        }
-
-        // Send Message
-        async function sendMessage(event) {
-            event.preventDefault();
-            const userInput = document.getElementById("userInput").value.trim();
-            if (!userInput) return;
-
-            // Check question limit for non-authenticated users
-            if (!auth.currentUser) {
-                let questionCount = parseInt(localStorage.getItem('questionCount') || '0');
-                questionCount++;
-                localStorage.setItem('questionCount', questionCount);
-                if (questionCount > QUESTION_LIMIT) {
-                    document.getElementById('authMessage').innerText = 'You have reached the 5-question limit. Please log in to continue.';
-                    document.getElementById('userInput').disabled = true;
-                    document.querySelector('.input-area button').disabled = true;
-                    showAuth();
-                    return;
-                }
-            }
-
-            if (!currentConversationId) {
-                const newConv = {
-                    id: push(ref(db, 'conversations/' + (auth.currentUser?.uid || 'guest'))).key,
-                    title: userInput.slice(0, 30) + (userInput.length > 30 ? "..." : ""),
-                    messages: []
-                };
-                conversations.push(newConv);
-                currentConversationId = newConv.id;
-                if (auth.currentUser) {
-                    await set(ref(db, 'conversations/' + auth.currentUser.uid + '/' + currentConversationId), newConv);
-                }
-                updateChatHistory();
-            }
-
-            addMessage(userInput, true);
-            const currentConversation = conversations.find(conv => conv.id === currentConversationId);
-            currentConversation.messages.push({ role: "user", parts: [{ text: userInput }] });
-
-            // Save to Firebase
-            if (auth.currentUser) {
-                await set(ref(db, 'conversations/' + auth.currentUser.uid + '/' + currentConversationId), currentConversation);
-            }
-
-            document.getElementById("userInput").value = "";
-            document.getElementById("userInput").focus();
-            const loadingMessage = addMessage("", false, true);
-
-            try {
-                const response = await fetch(`${API_URL}?key=AIzaSyDxOoWvmAjmiB286W5A_q7ZyE04pWSuwKE`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ contents: currentConversation.messages }),
-                });
-
-                if (!response.ok) {
-                    if (response.status === 403) throw new Error("Invalid API key or access denied.");
-                    if (response.status === 429) throw new Error("Rate limit exceeded. Please try again later.");
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                if (data.error) throw new Error(data.error.message);
-
-                const botResponse = data.candidates[0].content.parts[0].text;
-                loadingMessage.querySelector(".message-text").innerHTML = formatMessage(botResponse);
-                loadingMessage.classList.remove("loading");
-                const timestamp = document.createElement("div");
-                timestamp.className = "timestamp";
-                timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                loadingMessage.querySelector(".message-content").appendChild(timestamp);
-
-                const buttonGroup = document.createElement("div");
-                buttonGroup.className = "button-group";
-
-                const copyBtn = document.createElement("button");
-                copyBtn.className = "copy-btn";
-                copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
-                copyBtn.setAttribute("aria-label", "Copy message");
-                copyBtn.onclick = () => {
-                    navigator.clipboard.writeText(botResponse).then(() => {
-                        copyBtn.innerHTML = '<i class="bi bi-clipboard-check"></i>';
-                        showToast("Text copied to clipboard!");
-                        setTimeout(() => copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>', 2000);
-                    }).catch(() => {
-                        showToast("Failed to copy text!");
-                    });
-                };
-                buttonGroup.appendChild(copyBtn);
-
-                loadingMessage.querySelector(".message-content").appendChild(buttonGroup);
-
-                currentConversation.messages.push({ role: "model", parts: [{ text: botResponse }] });
-                if (auth.currentUser) {
-                    await set(ref(db, 'conversations/' + auth.currentUser.uid + '/' + currentConversationId), currentConversation);
-                }
-                Prism.highlightAllUnder(loadingMessage);
-            } catch (error) {
-                console.error("Error sending message:", error);
-                let errorMessage = `Error: ${error.message || "Unable to get response. Please try again."}`;
-                loadingMessage.querySelector(".message-text").innerHTML = errorMessage;
-                loadingMessage.classList.remove("loading");
-                const timestamp = document.createElement("div");
-                timestamp.className = "timestamp";
-                timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                loadingMessage.querySelector(".message-content").appendChild(timestamp);
-            }
-        }
-
-        // Authentication Handling
-        async function logout() {
-            console.log("Logging out");
-            try {
-                await signOut(auth);
-                conversations = [];
-                currentConversationId = null;
-                localStorage.removeItem('questionCount');
-                showAuth();
-                showToast("Logged out successfully!");
-            } catch (error) {
-                console.error("Error logging out:", error);
-                showToast("Failed to log out!");
-            }
-        }
-
-        // Event Listeners
-        function initializeEventListeners() {
-            // Tab Switching
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.form-container form').forEach(f => f.classList.remove('active'));
-                    tab.classList.add('active');
-                    document.getElementById(tab.dataset.target).classList.add('active');
-                    document.getElementById('authMessage').innerText = '';
-                });
-            });
-
-            // Register Form
-            document.getElementById('registerForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const username = document.getElementById('regUsername').value;
-                const email = document.getElementById('regEmail').value;
-                const password = document.getElementById('regPassword').value;
-
-                try {
-                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                    const user = userCredential.user;
-                    await set(ref(db, 'users/' + user.uid), {
-                        username: username,
-                        email: email
-                    });
-                    document.getElementById('authMessage').innerText = 'User registered successfully!';
-                    document.getElementById('registerForm').reset();
-                    showChat();
-                    showToast("Registration successful!");
-                } catch (error) {
-                    console.error("Error registering:", error);
-                    document.getElementById('authMessage').innerText = `Error: ${error.message}`;
-                }
-            });
-
-            // Login Form
-            document.getElementById('loginForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('loginEmail').value;
-                const password = document.getElementById('loginPassword').value;
-
-                try {
-                    await signInWithEmailAndPassword(auth, email, password);
-                    document.getElementById('authMessage').innerText = 'Login successful!';
-                    showChat();
-                    showToast("Login successful!");
-                } catch (error) {
-                    console.error("Error logging in:", error);
-                    document.getElementById('authMessage').innerText = `Error: ${error.message}`;
-                }
-            });
-
-            // Message Form
-            document.getElementById('messageForm').addEventListener('submit', sendMessage);
-
-            // Sidebar Toggle
-            document.querySelector(".sidebar-toggle").addEventListener('click', debouncedToggleSidebar);
-            document.getElementById("overlay").addEventListener('click', debouncedToggleSidebar);
-
-            // Theme Toggle
-            document.getElementById('themeToggleBtn').addEventListener('click', toggleTheme);
-
-            // New Chat
-            document.getElementById('newChatBtn').addEventListener('click', newChat);
-
-            // Clear History
-            document.getElementById('clearHistoryBtn').addEventListener('click', confirmClearHistory);
-
-            // Logout
-            document.getElementById('logoutBtn').addEventListener('click', logout);
-
-            // Search History
-            document.getElementById('searchHistory').addEventListener('input', filterChats);
-
-            // Keyboard Shortcuts
-            document.addEventListener("keydown", (e) => {
-                if (e.key === "Escape" && sidebarState) debouncedToggleSidebar();
-                if (e.key === "Enter" && document.activeElement.id === "userInput") {
-                    sendMessage(e);
-                }
-            });
-        }
-
-        // Authentication State Listener
-        onAuthStateChanged(auth, async (user) => {
-            console.log("Auth state changed:", user ? user.uid : "No user");
-            if (user) {
-                try {
-                    const snapshot = await get(ref(db, 'conversations/' + user.uid));
-                    conversations = snapshot.exists() ? Object.entries(snapshot.val()).map(([id, conv]) => ({ id, ...conv })) : [];
-                    showChat();
-                } catch (error) {
-                    console.error("Error loading conversations:", error);
-                    showToast("Failed to load conversations!");
-                }
-            } else {
-                conversations = [];
-                currentConversationId = null;
-                showAuth();
-                const questionCount = parseInt(localStorage.getItem('questionCount') || '0');
-                if (questionCount >= QUESTION_LIMIT) {
-                    document.getElementById('authMessage').innerText = 'You have reached the 5-question limit. Please log in to continue.';
-                    document.getElementById('userInput').disabled = true;
-                    document.querySelector('.input-area button').disabled = true;
-                }
+                let text = escapeHtml(part.content);
+                text = text.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>')
+                          .replace(/^##\s+(.+)$/gm, '<h2>$1</h2>')
+                          .replace(/^#\s+(.+)$/gm, '<h1>$1</h1>')
+                          .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                          .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                          .replace(/^(?:-|\*)\s+(.+)$/gm, '<li>$1</li>')
+                          .replace(/(<li>.+<\/li>)(?=(?:<li>|$))/gs, '<ul>$1</ul>')
+                          .replace(/^\d+\.\s+(.+)$/gm, '<li>$1</li>')
+                          .replace(/(<li>.+<\/li>)(?=(?:<li>|$))/gs, '<ol>$1</ol>')
+                          .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+                          .replace(/(?<!\n)\n(?!\n)/g, '<br>');
+                formattedContent += `<p>${text}</p>`;
             }
         });
 
-        // Initialize
-        window.onload = () => {
-            console.log("Window loaded");
-            if (localStorage.getItem("theme") === "dark") toggleTheme();
-            if (sidebarState) debouncedToggleSidebar();
-            initializeEventListeners();
-            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-            tooltipTriggerList.forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        formattedContent = formattedContent.replace(/<p>\s*<\/p>/g, '');
+        return formattedContent;
+    }
+
+    // Add Message to Chat
+    function addMessage(content, isUser, isLoading = false) {
+        const chatBox = document.getElementById("chatBox");
+        const welcomeMessage = document.getElementById("welcomeMessage");
+        if (welcomeMessage) welcomeMessage.remove();
+
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `message ${isUser ? "user-message" : "bot-message"}`;
+        const avatar = document.createElement("div");
+        avatar.className = "avatar";
+        avatar.textContent = isUser ? "U" : "AI";
+
+        const contentDiv = document.createElement("div");
+        contentDiv.className = "message-content";
+
+        const textDiv = document.createElement("div");
+        textDiv.className = "message-text";
+        textDiv.innerHTML = isLoading ? `<span class="loader"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>` : formatMessage(content);
+
+        contentDiv.appendChild(textDiv);
+
+        if (!isLoading) {
+            const timestamp = document.createElement("div");
+            timestamp.className = "timestamp";
+            timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            contentDiv.appendChild(timestamp);
+
+            const buttonGroup = document.createElement("div");
+            buttonGroup.className = "button-group";
+
+            const copyBtn = document.createElement("button");
+            copyBtn.className = "copy-btn";
+            copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
+            copyBtn.setAttribute("aria-label", "Copy message");
+            copyBtn.onclick = () => {
+                navigator.clipboard.writeText(content).then(() => {
+                    copyBtn.innerHTML = '<i class="bi bi-clipboard-check"></i>';
+                    showToast("Text copied to clipboard!");
+                    setTimeout(() => copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>', 2000);
+                }).catch(() => {
+                    showToast("Failed to copy text!");
+                });
+            };
+            buttonGroup.appendChild(copyBtn);
+
+            contentDiv.appendChild(buttonGroup);
+
+            requestAnimationFrame(() => {
+                Prism.highlightAllUnder(messageDiv);
+                const codeBlocks = messageDiv.querySelectorAll('.code-block');
+                codeBlocks.forEach(block => {
+                    const pre = block.querySelector('pre');
+                    if (pre.scrollHeight > pre.clientHeight) {
+                        block.classList.add('scrollable');
+                    }
+                    const copyBtn = block.querySelector('.copy-btn');
+                    copyBtn.onclick = () => copyCode(block.querySelector('code').textContent);
+                });
+            });
+        }
+
+        messageDiv.appendChild(avatar);
+        messageDiv.appendChild(contentDiv);
+        chatBox.appendChild(messageDiv);
+        chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
+
+        return messageDiv;
+    }
+
+    // Display Welcome Message
+    function displayWelcomeMessage() {
+        const chatBox = document.getElementById("chatBox");
+        chatBox.innerHTML = `<div class="welcome-message" id="welcomeMessage">${formatMessage(WELCOME_MESSAGE)}</div>`;
+        document.getElementById("userInput").value = "";
+        document.getElementById("userInput").focus();
+    }
+
+    // Chat History Management
+    function appendChatHistoryItem(conv) {
+        const chatHistory = document.getElementById("chatHistory");
+        const historyItem = document.createElement("div");
+        historyItem.className = `chat-history-item ${conv.id === currentConversationId ? "active" : ""}`;
+        historyItem.innerHTML = `<i class="bi bi-chat-left-text"></i><span>${conv.title}</span>`;
+        historyItem.onclick = () => {
+            loadConversation(conv.id);
+            if (window.innerWidth <= 767) debouncedToggleSidebar();
         };
-    </script>
+
+        const editBtn = document.createElement("button");
+        editBtn.className = "edit-title";
+        editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
+        editBtn.setAttribute("aria-label", "Edit chat title");
+        editBtn.onclick = (e) => {
+            e.stopPropagation();
+            editChatTitle(conv, historyItem);
+        };
+        historyItem.appendChild(editBtn);
+
+        chatHistory.appendChild(historyItem);
+    }
+
+    function updateChatHistory() {
+        const chatHistory = document.getElementById("chatHistory");
+        chatHistory.innerHTML = "";
+        conversations
+            .filter(conv => conv.messages && conv.messages.length > 0)
+            .forEach(conv => appendChatHistoryItem(conv));
+        Prism.highlightAll();
+    }
+
+    function editChatTitle(conv, historyItem) {
+        const span = historyItem.querySelector("span");
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = conv.title;
+        input.style.width = "80%";
+        input.style.padding = "0.25rem";
+        input.style.borderRadius = "4px";
+        input.style.border = "1px solid var(--border-color)";
+        span.replaceWith(input);
+        input.focus();
+
+        const saveTitle = async () => {
+            conv.title = input.value.trim() || conv.title;
+            input.replaceWith(span);
+            span.textContent = conv.title;
+            if (auth.currentUser) {
+                await set(ref(db, 'conversations/' + auth.currentUser.uid + '/' + conv.id), conv);
+            }
+            updateChatHistory();
+        };
+
+        input.addEventListener('blur', saveTitle);
+        input.addEventListener('keypress', (e) => {
+            if (e.key === "Enter") saveTitle();
+        });
+    }
+
+    function filterChats() {
+        const searchTerm = document.getElementById("searchHistory").value.toLowerCase();
+        const chatHistory = document.getElementById("chatHistory");
+        chatHistory.innerHTML = "";
+        conversations
+            .filter(conv => conv.title && conv.title.toLowerCase().includes(searchTerm))
+            .forEach(conv => appendChatHistoryItem(conv));
+    }
+
+    // Conversation Functions
+    async function newChat() {
+        console.log("Starting new chat");
+        currentConversationId = null;
+        updateChatHistory();
+        displayWelcomeMessage();
+        if (window.innerWidth <= 767) debouncedToggleSidebar();
+        showToast("New chat started!");
+    }
+
+    async function loadConversation(id) {
+        console.log("Loading conversation:", id);
+        currentConversationId = id;
+        const chatBox = document.getElementById("chatBox");
+        chatBox.innerHTML = "";
+        const conversation = conversations.find(conv => conv.id === id);
+        if (conversation && conversation.messages) {
+            conversation.messages.forEach(msg => addMessage(msg.parts[0].text, msg.role === "user"));
+        } else {
+            displayWelcomeMessage();
+        }
+        updateChatHistory();
+        document.getElementById("userInput").focus();
+    }
+
+    async function confirmClearHistory() {
+        console.log("Clearing history");
+        if (!confirm("Are you sure you want to clear all chat history?")) return;
+        try {
+            if (auth.currentUser) {
+                await remove(ref(db, 'conversations/' + auth.currentUser.uid));
+            }
+            conversations = [];
+            currentConversationId = null;
+            updateChatHistory();
+            displayWelcomeMessage();
+            showToast("Chat history cleared!");
+        } catch (error) {
+            console.error("Error clearing history:", error);
+            showToast("Failed to clear history!");
+        }
+    }
+
+    // Send Message
+    async function sendMessage(event) {
+        event.preventDefault();
+        const userInput = document.getElementById("userInput").value.trim();
+        if (!userInput) return;
+
+        if (!auth.currentUser) {
+            let questionCount = parseInt(localStorage.getItem('questionCount') || '0');
+            questionCount++;
+            localStorage.setItem('questionCount', questionCount);
+            if (questionCount > QUESTION_LIMIT) {
+                document.getElementById('authMessage').innerText = 'You have reached the 5-question limit. Please log in to continue.';
+                document.getElementById('userInput').disabled = true;
+                document.querySelector('.input-area button').disabled = true;
+                showAuth();
+                return;
+            }
+        }
+
+        if (!currentConversationId) {
+            const newConv = {
+                id: push(ref(db, 'conversations/' + (auth.currentUser?.uid || 'guest'))).key,
+                title: userInput.slice(0, 30) + (userInput.length > 30 ? "..." : ""),
+                messages: []
+            };
+            conversations.push(newConv);
+            currentConversationId = newConv.id;
+            if (auth.currentUser) {
+                await set(ref(db, 'conversations/' + auth.currentUser.uid + '/' + currentConversationId), newConv);
+            }
+            updateChatHistory();
+        }
+
+        addMessage(userInput, true);
+        const currentConversation = conversations.find(conv => conv.id === currentConversationId);
+        currentConversation.messages.push({ role: "user", parts: [{ text: userInput }] });
+
+        if (auth.currentUser) {
+            await set(ref(db, 'conversations/' + auth.currentUser.uid + '/' + currentConversationId), currentConversation);
+        }
+
+        document.getElementById("userInput").value = "";
+        document.getElementById("userInput").focus();
+        const loadingMessage = addMessage("", false, true);
+
+        try {
+            const response = await fetch(`${API_URL}?key=AIzaSyDxOoWvmAjmiB286W5A_q7ZyE04pWSuwKE`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ contents: currentConversation.messages }),
+            });
+
+            if (!response.ok) {
+                if (response.status === 403) throw new Error("Invalid API key or access denied.");
+                if (response.status === 429) throw new Error("Rate limit exceeded. Please try again later.");
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            if (data.error) throw new Error(data.error.message);
+
+            const botResponse = data.candidates[0].content.parts[0].text;
+            loadingMessage.querySelector(".message-text").innerHTML = formatMessage(botResponse);
+            loadingMessage.classList.remove("loading");
+            const timestamp = document.createElement("div");
+            timestamp.className = "timestamp";
+            timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            loadingMessage.querySelector(".message-content").appendChild(timestamp);
+
+            const buttonGroup = document.createElement("div");
+            buttonGroup.className = "button-group";
+
+            const copyBtn = document.createElement("button");
+            copyBtn.className = "copy-btn";
+            copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
+            copyBtn.setAttribute("aria-label", "Copy message");
+            copyBtn.onclick = () => {
+                navigator.clipboard.writeText(botResponse).then(() => {
+                    copyBtn.innerHTML = '<i class="bi bi-clipboard-check"></i>';
+                    showToast("Text copied to clipboard!");
+                    setTimeout(() => copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>', 2000);
+                }).catch(() => {
+                    showToast("Failed to copy text!");
+                });
+            };
+            buttonGroup.appendChild(copyBtn);
+
+            loadingMessage.querySelector(".message-content").appendChild(buttonGroup);
+
+            currentConversation.messages.push({ role: "model", parts: [{ text: botResponse }] });
+            if (auth.currentUser) {
+                await set(ref(db, 'conversations/' + auth.currentUser.uid + '/' + currentConversationId), currentConversation);
+            }
+            Prism.highlightAllUnder(loadingMessage);
+        } catch (error) {
+            console.error("Error sending message:", error);
+            let errorMessage = `Error: ${error.message || "Unable to get response. Please try again."}`;
+            loadingMessage.querySelector(".message-text").innerHTML = errorMessage;
+            loadingMessage.classList.remove("loading");
+            const timestamp = document.createElement("div");
+            timestamp.className = "timestamp";
+            timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            loadingMessage.querySelector(".message-content").appendChild(timestamp);
+        }
+    }
+
+    // Authentication Handling
+    async function logout() {
+        console.log("Logging out");
+        try {
+            await signOut(auth);
+            conversations = [];
+            currentConversationId = null;
+            localStorage.removeItem('questionCount');
+            showAuth();
+            showToast("Logged out successfully!");
+        } catch (error) {
+            console.error("Error logging out:", error);
+            showToast("Failed to log out!");
+        }
+    }
+
+    // Event Listeners
+    function initializeEventListeners() {
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.form-container form').forEach(f => f.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.target).classList.add('active');
+                document.getElementById('authMessage').innerText = '';
+            });
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                await set(ref(db, 'users/' + user.uid), {
+                    username: username,
+                    email: email
+                });
+                document.getElementById('authMessage').innerText = 'User registered successfully!';
+                document.getElementById('registerForm').reset();
+                showChat();
+                showToast("Registration successful!");
+            } catch (error) {
+                console.error("Error registering:", error);
+                document.getElementById('authMessage').innerText = `Error: ${error.message}`;
+            }
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                document.getElementById('authMessage').innerText = 'Login successful!';
+                showChat();
+                showToast("Login successful!");
+            } catch (error) {
+                console.error("Error logging in:", error);
+                document.getElementById('authMessage').innerText = `Error: ${error.message}`;
+            }
+        });
+
+        document.getElementById('messageForm').addEventListener('submit', sendMessage);
+
+        document.querySelector(".sidebar-toggle").addEventListener('click', debouncedToggleSidebar);
+        document.getElementById("overlay").addEventListener('click', debouncedToggleSidebar);
+
+        document.getElementById('themeToggleBtn').addEventListener('click', toggleTheme);
+
+        document.getElementById('newChatBtn').addEventListener('click', newChat);
+
+        document.getElementById('clearHistoryBtn').addEventListener('click', confirmClearHistory);
+
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        document.getElementById('searchHistory').addEventListener('input', filterChats);
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && sidebarState) debouncedToggleSidebar();
+            if (e.key === "Enter" && document.activeElement.id === "userInput") {
+                sendMessage(e);
+            }
+        });
+    }
+
+    // Authentication State Listener
+    onAuthStateChanged(auth, async (user) => {
+        console.log("Auth state changed:", user ? user.uid : "No user");
+        if (user) {
+            try {
+                const snapshot = await get(ref(db, 'conversations/' + user.uid));
+                conversations = snapshot.exists() ? Object.entries(snapshot.val()).map(([id, conv]) => ({ id, ...conv })) : [];
+                showChat();
+                updateChatHistory();
+                if (conversations.length > 0) {
+                    loadConversation(conversations[conversations.length - 1].id);
+                }
+            } catch (error) {
+                console.error("Error loading conversations:", error);
+                showToast("Failed to load conversations!");
+                showChat();
+            }
+        } else {
+            conversations = [];
+            currentConversationId = null;
+            showAuth();
+            const questionCount = parseInt(localStorage.getItem('questionCount') || '0');
+            if (questionCount >= QUESTION_LIMIT) {
+                document.getElementById('authMessage').innerText = 'You have reached the 5-question limit. Please log in to continue.';
+                document.getElementById('userInput').disabled = true;
+                document.querySelector('.input-area button').disabled = true;
+            }
+            updateChatHistory();
+        }
+        updateSidebarState();
+    });
+
+    // Initialize
+    window.onload = () => {
+        console.log("Window loaded");
+        if (localStorage.getItem("theme") === "dark") toggleTheme();
+        initializeEventListeners();
+        updateSidebarState();
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        tooltipTriggerList.forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    };
+</script>
 </body>
 </html>

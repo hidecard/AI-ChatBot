@@ -51,38 +51,63 @@
         }
 
         .auth-container {
-            max-width: 400px;
-            margin: 50px auto;
-            padding: 20px;
+            max-width: 450px;
+            margin: 5vh auto;
+            padding: 2rem;
             background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
         }
 
         .dark-mode .auth-container {
             background-color: var(--dark-secondary);
             color: var(--dark-text);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-header h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
         }
 
         .tabs {
             display: flex;
-            margin-bottom: 20px;
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #f1f5f9;
+        }
+
+        .dark-mode .tabs {
+            background-color: #374151;
         }
 
         .tab {
             flex: 1;
-            padding: 10px;
+            padding: 0.75rem;
             text-align: center;
             cursor: pointer;
-            background-color: #ddd;
-            border: 1px solid var(--border-color);
-            transition: background-color 0.3s;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            color: var(--text-color);
         }
 
         .tab.active {
             background-color: var(--primary-color);
             color: white;
-            border: none;
+            font-weight: 600;
+        }
+
+        .tab:hover {
+            background-color: var(--accent-color);
+            color: white;
         }
 
         .form-container form {
@@ -94,12 +119,13 @@
         }
 
         .auth-container input {
-            margin: 8px 0;
-            padding: 10px;
+            margin: 0.5rem 0;
+            padding: 0.75rem;
             width: 100%;
             box-sizing: border-box;
             border: 1px solid var(--border-color);
-            border-radius: 4px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
         }
 
         .dark-mode .auth-container input {
@@ -108,26 +134,35 @@
             color: var(--dark-text);
         }
 
+        .auth-container input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+            outline: none;
+        }
+
         .auth-container button {
-            margin: 8px 0;
-            padding: 10px;
+            margin: 1rem 0;
+            padding: 0.75rem;
             width: 100%;
             background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
+            font-weight: 500;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
         }
 
         .auth-container button:hover {
             background-color: #ea580c;
+            transform: translateY(-1px);
         }
 
         #authMessage {
-            color: red;
-            margin-top: 10px;
+            color: #dc2626;
+            margin-top: 0.75rem;
             text-align: center;
+            font-size: 0.9rem;
         }
 
         .sidebar {
@@ -408,8 +443,7 @@
         .timestamp {
             font-size: 0.75rem;
             color: #ffffff;
-            margin-top: 0.25rem;
-            text-align: right;
+ ngon: right;
         }
 
         .user-message .timestamp {
@@ -796,8 +830,13 @@
             }
 
             .auth-container {
-                margin: 20px;
-                padding: 15px;
+                margin: 10vh 1rem;
+                padding: 1.5rem;
+                max-width: 100%;
+            }
+
+            .auth-header h2 {
+                font-size: 1.5rem;
             }
 
             .sidebar h5 {
@@ -866,6 +905,10 @@
 
         @media (min-width: 768px) {
             .sidebar {
+                transform: translateX(0);
+            }
+
+            .sidebar-hidden {
                 transform: translateX(-300px);
             }
 
@@ -874,12 +917,12 @@
             }
 
             .main-content {
-                margin-left: 0;
+                margin-left: 300px;
                 transition: margin-left 0.3s ease-in-out;
             }
 
-            .main-content.sidebar-expanded {
-                margin-left: 300px;
+            .main-content.sidebar-hidden {
+                margin-left: 0;
             }
 
             .chat-container {
@@ -899,7 +942,7 @@
     </style>
 </head>
 <body>
-    <button class="sidebar-toggle" aria-expanded="false" aria-label="Toggle Sidebar" data-bs-toggle="tooltip" data-bs-placement="right" title="Toggle Sidebar">
+    <button class="sidebar-toggle" aria-expanded="true" aria-label="Toggle Sidebar" data-bs-toggle="tooltip" data-bs-placement="right" title="Toggle Sidebar">
         <i class="bi bi-list"></i>
     </button>
     <div class="overlay" id="overlay"></div>
@@ -907,7 +950,7 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <div class="sidebar sidebar-hidden" id="sidebar">
+            <div class="sidebar sidebar-open" id="sidebar">
                 <h5>Chat History</h5>
                 <div class="theme-toggle">
                     <button id="themeToggleBtn" aria-label="Toggle Theme">
@@ -924,23 +967,27 @@
                 <div id="chatHistory"></div>
             </div>
             <!-- Main Content -->
-            <div class="col-12 main-content" id="mainContent">
+            <div class="col-12 main-content sidebar-open" id="mainContent">
                 <!-- Auth Container -->
                 <div class="auth-container" id="authContainer">
+                    <div class="auth-header">
+                        <h2>Welcome to YHA - AI</h2>
+                        <p>Login or create an account to continue</p>
+                    </div>
                     <div class="tabs">
                         <div class="tab active" data-target="loginForm">Login</div>
                         <div class="tab" data-target="registerForm">Register</div>
                     </div>
                     <div class="form-container">
                         <form id="loginForm" class="active">
-                            <input type="email" id="loginEmail" placeholder="Email" required><br>
-                            <input type="password" id="loginPassword" placeholder="Password" required><br>
+                            <input type="email" id="loginEmail" placeholder="Email" required>
+                            <input type="password" id="loginPassword" placeholder="Password" required>
                             <button type="submit">Login</button>
                         </form>
                         <form id="registerForm">
-                            <input type="text" id="regUsername" placeholder="Username" required><br>
-                            <input type="email" id="regEmail" placeholder="Email" required><br>
-                            <input type="password" id="regPassword" placeholder="Password" required><br>
+                            <input type="text" id="regUsername" placeholder="Username" required>
+                            <input type="email" id="regEmail" placeholder="Email" required>
+                            <input type="password" id="regPassword" placeholder="Password" required>
                             <button type="submit">Register</button>
                         </form>
                     </div>
@@ -1037,11 +1084,21 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
         function showAuth() {
             document.getElementById('authContainer').style.display = 'block';
             document.getElementById('chatContainer').style.display = 'none';
-            document.getElementById('sidebar').style.display = 'none';
-            document.getElementById('sidebar-toggle').style.display = 'none';
+            document.getElementById('sidebar').style.display = 'block';
+            document.getElementById('sidebar-toggle').style.display = 'block';
             document.getElementById('userInput').disabled = false;
             document.querySelector('.input-area button').disabled = false;
             document.getElementById('authMessage').innerText = '';
+            document.getElementById('mainContent').classList.add('sidebar-open');
+            if (sidebarState) {
+                document.getElementById('sidebar').classList.add('sidebar-open');
+                document.getElementById('sidebar').classList.remove('sidebar-hidden');
+                document.querySelector('.sidebar-toggle').setAttribute('aria-expanded', 'true');
+            } else {
+                document.getElementById('sidebar').classList.add('sidebar-hidden');
+                document.getElementById('sidebar').classList.remove('sidebar-open');
+                document.querySelector('.sidebar-toggle').setAttribute('aria-expanded', 'false');
+            }
             displayWelcomeMessage();
         }
 
@@ -1058,6 +1115,17 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             } else {
                 displayWelcomeMessage();
             }
+            if (sidebarState) {
+                document.getElementById('sidebar').classList.add('sidebar-open');
+                document.getElementById('sidebar').classList.remove('sidebar-hidden');
+                document.getElementById('mainContent').classList.add('sidebar-open');
+                document.querySelector('.sidebar-toggle').setAttribute('aria-expanded', 'true');
+            } else {
+                document.getElementById('sidebar').classList.add('sidebar-hidden');
+                document.getElementById('sidebar').classList.remove('sidebar-open');
+                document.getElementById('mainContent').classList.remove('sidebar-open');
+                document.querySelector('.sidebar-toggle').setAttribute('aria-expanded', 'false');
+            }
         }
 
         function toggleSidebar() {
@@ -1070,7 +1138,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             if (isOpen) {
                 sidebar.classList.remove("sidebar-open");
                 sidebar.classList.add("sidebar-hidden");
-                mainContent.classList.remove("sidebar-expanded");
+                mainContent.classList.remove("sidebar-open");
                 toggleBtn.setAttribute("aria-expanded", "false");
                 toggleBtn.querySelector("i").classList.replace("bi-x", "bi-list");
                 overlay.classList.remove("overlay-active");
@@ -1078,7 +1146,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             } else {
                 sidebar.classList.add("sidebar-open");
                 sidebar.classList.remove("sidebar-hidden");
-                mainContent.classList.add("sidebar-expanded");
+                mainContent.classList.add("sidebar-open");
                 toggleBtn.setAttribute("aria-expanded", "true");
                 toggleBtn.querySelector("i").classList.replace("bi-list", "bi-x");
                 overlay.classList.add("overlay-active");
@@ -1280,30 +1348,29 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
         function editChatTitle(conv, historyItem) {
             const span = historyItem.querySelector("span");
             const input = document.createElement("input");
-            input.type = conv.title;
-            input.value = "text";
-            document.type = 'input';
+            input.type = "text";
+            input.value = conv.title;
             input.style.width = "80%";
             input.style.padding = "0.25rem";
             input.style.borderRadius = "4px";
             input.style.border = "1px solid var(--border-color)";
-            span.replaceChild(input, span);
+            span.replaceWith(input);
             input.focus();
 
-            input.onblur(() => saveTitle());
-            input.onkeypress(e => {
-                if (e.key === "Enter") saveTitle();
-            });
-
-            async function saveTitle() {
+            const saveTitle = async () => {
                 conv.title = input.value.trim() || conv.title;
-                span.replaceChild(input, span);
+                input.replaceWith(span);
                 span.textContent = conv.title;
                 if (auth.currentUser) {
                     await set(ref(db, 'conversations/' + auth.currentUser.uid + '/' + conv.id), conv);
                 }
                 updateChatHistory();
-            }
+            };
+
+            input.addEventListener('blur', saveTitle);
+            input.addEventListener('keypress', (e) => {
+                if (e.key === "Enter") saveTitle();
+            });
         }
 
         function filterChats() {
@@ -1491,6 +1558,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
                     document.querySelectorAll('.form-container form').forEach(f => f.classList.remove('active'));
                     tab.classList.add('active');
                     document.getElementById(tab.dataset.target).classList.add('active');
+                    document.getElementById('authMessage').innerText = '';
                 });
             });
 

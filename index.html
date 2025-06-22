@@ -17,7 +17,7 @@
     <style>
         :root {
             --sidebar-width: 280px;
-            --primary-color: #f97316; /* Grok-inspired orange */
+            --primary-color: #f97316;
             --secondary-color: #fff7ed;
             --text-color: #1e293b;
             --border-color: #e5e7eb;
@@ -166,7 +166,6 @@
             font-size: 0.9rem;
         }
 
-        /* Updated Sidebar Styles (Grok-inspired) */
         .sidebar {
             width: var(--sidebar-width);
             background-color: #ffffff;
@@ -444,6 +443,7 @@
             padding: 1.5rem;
             scroll-behavior: smooth;
             max-height: calc(100vh - 4rem - 60px);
+            aria-live: polite;
         }
 
         .chat-box::-webkit-scrollbar, .sidebar::-webkit-scrollbar, .code-block::-webkit-scrollbar {
@@ -591,22 +591,22 @@
             overflow-y: auto;
             max-height: auto;
             border: 1px solid var(--border-color);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .dark-mode .code-block {
             background: var(--code-dark-bg);
             color: var(--code-dark-text);
             border-color: #4b5563;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        .code-block.scrollable {
+        .scrollable {
             border-bottom: 2px solid var(--accent-color);
             max-height: 400px;
         }
 
-        .code-block.expanded {
+        .expanded {
             max-height: none;
         }
 
@@ -626,7 +626,7 @@
             color: var(--dark-text);
         }
 
-        .code-block.expanded .toggle-btn i {
+        .code-block .expanded .toggle-btn i {
             transform: rotate(180deg);
         }
 
@@ -728,9 +728,10 @@
             display: flex;
             gap: 0.75rem;
             align-items: center;
+            flex-wrap: wrap;
         }
 
-        .input-area input {
+        .input-area input[type="text"] {
             flex: 1;
             border-radius: 999px;
             border: 1px solid var(--border-color);
@@ -739,7 +740,11 @@
             transition: border-color 0.2s, background-color 0.3s;
         }
 
-        .dark-mode .input-area input {
+        .input-area input[type="file"] {
+            display: none;
+        }
+
+        .dark-mode .input-area input[type="text"] {
             border-color: #4b5563;
             background-color: #374151;
             color: var(--dark-text);
@@ -764,6 +769,11 @@
 
         .input-area button:hover {
             background: #ea580c;
+        }
+
+        .input-area button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
         }
 
         .loader {
@@ -876,10 +886,6 @@
             margin-left: var(--sidebar-width);
         }
 
-        .main-content.sidebar-hidden {
-            margin-left: 0;
-        }
-
         @media (max-width: 767px) {
             body {
                 font-size: 0.9rem;
@@ -960,7 +966,7 @@
                 padding: 0.75rem;
             }
 
-            .input-area input {
+            .input-area input[type="text"] {
                 font-size: 0.85rem;
                 padding: 0.5rem 0.8rem;
             }
@@ -995,7 +1001,6 @@
     <div class="toast" id="toast">Text copied to clipboard!</div>
     <div class="container-fluid">
         <div class="row">
-            <!-- Updated Sidebar (Grok-inspired) -->
             <div class="sidebar sidebar-open" id="sidebar">
                 <div class="sidebar-header">
                     <h5><i class="bi bi-robot"></i> YHA - AI</h5>
@@ -1019,9 +1024,7 @@
                     </button>
                 </div>
             </div>
-            <!-- Main Content -->
             <div class="col-12 main-content sidebar-open" id="mainContent">
-                <!-- Auth Container -->
                 <div class="auth-container" id="authContainer">
                     <div class="auth-header">
                         <h2>Welcome to YHA - AI</h2>
@@ -1046,7 +1049,6 @@
                     </div>
                     <div id="authMessage"></div>
                 </div>
-                <!-- Chat Container -->
                 <div class="chat-container" id="chatContainer" style="display: none;">
                     <div class="chat-box" id="chatBox">
                         <div class="welcome-message" id="welcomeMessage"></div>
@@ -1054,6 +1056,10 @@
                     <div class="input-area">
                         <form id="messageForm" role="form">
                             <input type="text" id="userInput" class="form-control" placeholder="Ask me anything..." aria-label="Message input" />
+                            <label for="fileInput" class="btn btn-primary" style="border-radius: 999px; padding: 0.6rem 1rem;">
+                                <i class="bi bi-paperclip"></i>
+                            </label>
+                            <input type="file" id="fileInput" accept=".txt,.js,.py,.html,.css,.png,.jpg,.jpeg" aria-label="Upload file" />
                             <button type="submit" class="btn btn-primary" aria-label="Send message">
                                 <i class="bi bi-send"></i>
                             </button>
@@ -1069,6 +1075,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
     import { getDatabase, ref, set, get, push, remove } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
     // Bootstrap and Prism.js imports
     import "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js";
@@ -1094,6 +1101,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
+    const storage = getStorage(app);
 
     const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
     let conversations = [];
@@ -1133,6 +1141,39 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
         });
     }
 
+    // File Upload
+    async function handleFileUpload(file) {
+        if (!auth.currentUser) {
+            showToast("Please log in to upload files.");
+            return null;
+        }
+        if (file.size > 1 * 1024 * 1024) {
+            showToast("File size must be less than 1MB.");
+            return null;
+        }
+        try {
+            const fileRef = storageRef(storage, `uploads/${auth.currentUser.uid}/${Date.now()}_${file.name}`);
+            await uploadBytes(fileRef, file);
+            const url = await getDownloadURL(fileRef);
+            if (file.type.startsWith("image/")) {
+                const arrayBuffer = await file.arrayBuffer();
+                const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+                return { type: "image", inlineData: { data: base64, mimeType: file.type }, url, name: file.name };
+            } else {
+                const text = await file.text();
+                if (text.length > 100000) {
+                    showToast("Text file too large. Please upload a smaller file.");
+                    return null;
+                }
+                return { type: "text", content: text, url, name: file.name };
+            }
+        } catch (error) {
+            console.error("File upload error:", error);
+            showToast("Failed to upload file.");
+            return null;
+        }
+    }
+
     // UI Toggle Functions
     function showAuth() {
         document.getElementById('authContainer').style.display = 'block';
@@ -1140,7 +1181,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
         document.getElementById('sidebar').style.display = 'block';
         document.querySelector('.sidebar-toggle').style.display = 'block';
         document.getElementById('userInput').disabled = false;
-        document.querySelector('.input-area button').disabled = false;
+        document.querySelector('.input-area button[type="submit"]').disabled = false;
         document.getElementById('authMessage').innerText = '';
         updateSidebarState();
         displayWelcomeMessage();
@@ -1152,7 +1193,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
         document.getElementById('sidebar').style.display = 'block';
         document.querySelector('.sidebar-toggle').style.display = 'block';
         document.getElementById('userInput').disabled = false;
-        document.querySelector('.input-area button').disabled = false;
+        document.querySelector('.input-area button[type="submit"]').disabled = false;
         updateChatHistory();
         if (conversations.length > 0) {
             loadConversation(conversations[conversations.length - 1].id);
@@ -1291,7 +1332,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
 
         const textDiv = document.createElement("div");
         textDiv.className = "message-text";
-        textDiv.innerHTML = isLoading ? `<span class="loader"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>` : formatMessage(content);
+        textDiv.innerHTML = isLoading ? `<span class="loader"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span> AI is typing...` : formatMessage(content);
 
         contentDiv.appendChild(textDiv);
 
@@ -1322,16 +1363,26 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             contentDiv.appendChild(buttonGroup);
 
             requestAnimationFrame(() => {
-                Prism.highlightAllUnder(messageDiv);
                 const codeBlocks = messageDiv.querySelectorAll('.code-block');
                 codeBlocks.forEach(block => {
                     const pre = block.querySelector('pre');
                     if (pre.scrollHeight > pre.clientHeight) {
                         block.classList.add('scrollable');
+                        const toggleBtn = document.createElement('button');
+                        toggleBtn.className = 'toggle-btn';
+                        toggleBtn.innerHTML = '<i class="bi bi-chevron-down"></i>';
+                        toggleBtn.setAttribute('aria-label', 'Toggle code block');
+                        toggleBtn.onclick = () => {
+                            block.classList.toggle('expanded');
+                            toggleBtn.querySelector('i').classList.toggle('bi-chevron-down');
+                            toggleBtn.querySelector('i').classList.toggle('bi-chevron-up');
+                        };
+                        block.insertBefore(toggleBtn, pre);
                     }
                     const copyBtn = block.querySelector('.copy-btn');
                     copyBtn.onclick = () => copyCode(block.querySelector('code').textContent);
                 });
+                messageDiv.querySelectorAll('pre code').forEach(code => Prism.highlightElement(code));
             });
         }
 
@@ -1356,10 +1407,18 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
         const chatHistory = document.getElementById("chatHistory");
         const historyItem = document.createElement("div");
         historyItem.className = `chat-history-item ${conv.id === currentConversationId ? "active" : ""}`;
+        historyItem.dataset.id = conv.id;
+        historyItem.setAttribute("tabindex", "0");
         historyItem.innerHTML = `<i class="bi bi-chat-left-text"></i><span>${conv.title}</span>`;
         historyItem.onclick = () => {
             loadConversation(conv.id);
             if (window.innerWidth <= 767) debouncedToggleSidebar();
+        };
+        historyItem.onkeydown = (e) => {
+            if (e.key === "Enter" || e.key === "Space") {
+                loadConversation(conv.id);
+                if (window.innerWidth <= 767) debouncedToggleSidebar();
+            }
         };
 
         const editBtn = document.createElement("button");
@@ -1377,11 +1436,14 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
 
     function updateChatHistory() {
         const chatHistory = document.getElementById("chatHistory");
-        chatHistory.innerHTML = "";
+        const existingIds = new Set(Array.from(chatHistory.children).map(item => item.dataset.id));
         conversations
             .filter(conv => conv.messages && conv.messages.length > 0)
-            .forEach(conv => appendChatHistoryItem(conv));
-        Prism.highlightAll();
+            .forEach(conv => {
+                if (!existingIds.has(conv.id)) {
+                    appendChatHistoryItem(conv);
+                }
+            });
     }
 
     function editChatTitle(conv, historyItem) {
@@ -1438,7 +1500,10 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
         chatBox.innerHTML = "";
         const conversation = conversations.find(conv => conv.id === id);
         if (conversation && conversation.messages) {
-            conversation.messages.forEach(msg => addMessage(msg.parts[0].text, msg.role === "user"));
+            conversation.messages.forEach(msg => {
+                const content = msg.parts.find(part => part.text)?.text || "";
+                addMessage(content, msg.role === "user");
+            });
         } else {
             displayWelcomeMessage();
         }
@@ -1468,7 +1533,9 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
     async function sendMessage(event) {
         event.preventDefault();
         const userInput = document.getElementById("userInput").value.trim();
-        if (!userInput) return;
+        const fileInput = document.getElementById("fileInput");
+        const sendBtn = document.querySelector('.input-area button[type="submit"]');
+        if (!userInput && !fileInput.files.length) return;
 
         if (!auth.currentUser) {
             let questionCount = parseInt(localStorage.getItem('questionCount') || '0');
@@ -1477,9 +1544,25 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             if (questionCount > QUESTION_LIMIT) {
                 document.getElementById('authMessage').innerText = 'You have reached the 5-question limit. Please log in to continue.';
                 document.getElementById('userInput').disabled = true;
-                document.querySelector('.input-area button').disabled = true;
+                sendBtn.disabled = true;
                 showAuth();
                 return;
+            }
+        }
+
+        sendBtn.disabled = true;
+        let messageContent = userInput;
+        let fileData = null;
+
+        if (fileInput.files.length) {
+            const file = fileInput.files[0];
+            fileData = await handleFileUpload(file);
+            if (fileData) {
+                if (fileData.type === "text") {
+                    messageContent += `\n\nUploaded file (${fileData.name}):\n\`\`\`\n${fileData.content}\n\`\`\``;
+                } else if (fileData.type === "image") {
+                    messageContent += `\n\nUploaded image (${fileData.name}): [Image URL](${fileData.url})`;
+                }
             }
         }
 
@@ -1497,29 +1580,49 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             updateChatHistory();
         }
 
-        addMessage(userInput, true);
+        addMessage(messageContent, true);
         const currentConversation = conversations.find(conv => conv.id === currentConversationId);
-        currentConversation.messages.push({ role: "user", parts: [{ text: userInput }] });
+        const messageParts = [{ text: messageContent }];
+        if (fileData && fileData.type === "image") {
+            messageParts.push({ inlineData: fileData.inlineData });
+        }
+        currentConversation.messages.push({ role: "user", parts: messageParts });
 
         if (auth.currentUser) {
             await set(ref(db, 'conversations/' + auth.currentUser.uid + '/' + currentConversationId), currentConversation);
         }
 
         document.getElementById("userInput").value = "";
+        fileInput.value = "";
         document.getElementById("userInput").focus();
         const loadingMessage = addMessage("", false, true);
 
         try {
+            const validatedMessages = currentConversation.messages.map(msg => ({
+                role: msg.role,
+                parts: msg.parts.map(part => {
+                    if (part.text) return { text: part.text };
+                    if (part.inlineData) return { inlineData: part.inlineData };
+                    return part;
+                })
+            }));
+
+            console.log("Sending API request with payload:", JSON.stringify({ contents: validatedMessages }, null, 2));
+
             const response = await fetch(`${API_URL}?key=AIzaSyDxOoWvmAjmiB286W5A_q7ZyE04pWSuwKE`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contents: currentConversation.messages }),
+                body: JSON.stringify({ contents: validatedMessages }),
             });
 
             if (!response.ok) {
-                if (response.status === 403) throw new Error("Invalid API key or access denied.");
-                if (response.status === 429) throw new Error("Rate limit exceeded. Please try again later.");
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                const errorMessages = {
+                    400: "Invalid request. Please check the file format or content.",
+                    403: "Access denied. Please check your API configuration.",
+                    429: "Too many requests. Please wait and try again.",
+                    default: `HTTP ${response.status}: ${response.statusText}`
+                };
+                throw new Error(errorMessages[response.status] || errorMessages.default);
             }
 
             const data = await response.json();
@@ -1557,7 +1660,9 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             if (auth.currentUser) {
                 await set(ref(db, 'conversations/' + auth.currentUser.uid + '/' + currentConversationId), currentConversation);
             }
-            Prism.highlightAllUnder(loadingMessage);
+            requestAnimationFrame(() => {
+                loadingMessage.querySelectorAll('pre code').forEach(code => Prism.highlightElement(code));
+            });
         } catch (error) {
             console.error("Error sending message:", error);
             let errorMessage = `Error: ${error.message || "Unable to get response. Please try again."}`;
@@ -1567,6 +1672,8 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             timestamp.className = "timestamp";
             timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             loadingMessage.querySelector(".message-content").appendChild(timestamp);
+        } finally {
+            sendBtn.disabled = false;
         }
     }
 
@@ -1595,6 +1702,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
                 tab.classList.add('active');
                 document.getElementById(tab.dataset.target).classList.add('active');
                 document.getElementById('authMessage').innerText = '';
+                tab.focus();
             });
         });
 
@@ -1638,6 +1746,12 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
         });
 
         document.getElementById('messageForm').addEventListener('submit', sendMessage);
+
+        document.getElementById('fileInput').addEventListener('change', () => {
+            if (document.getElementById('fileInput').files.length) {
+                showToast("File selected. Send the message to upload.");
+            }
+        });
 
         document.querySelector(".sidebar-toggle").addEventListener('click', debouncedToggleSidebar);
         document.getElementById("overlay").addEventListener('click', debouncedToggleSidebar);
@@ -1685,7 +1799,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             if (questionCount >= QUESTION_LIMIT) {
                 document.getElementById('authMessage').innerText = 'You have reached the 5-question limit. Please log in to continue.';
                 document.getElementById('userInput').disabled = true;
-                document.querySelector('.input-area button').disabled = true;
+                document.querySelector('.input-area button[type="submit"]').disabled = true;
             }
             updateChatHistory();
         }

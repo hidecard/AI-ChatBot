@@ -442,7 +442,7 @@
             overflow-y: auto;
             padding: 1.5rem;
             scroll-behavior: smooth;
-            max-height: calc(100vh - 4rem - 60px);
+            max-height: calc(100vh - 4rem - 120px);
             aria-live: polite;
         }
 
@@ -886,6 +886,73 @@
             margin-left: var(--sidebar-width);
         }
 
+        .file-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--code-bg);
+        }
+
+        .dark-mode .file-preview-container {
+            border-color: #4b5563;
+            background: var(--code-dark-bg);
+        }
+
+        .file-preview {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 6px;
+            background: white;
+            border: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            max-width: 200px;
+        }
+
+        .dark-mode .file-preview {
+            background: #374151;
+            border-color: #4b5563;
+            color: var(--dark-text);
+        }
+
+        .file-preview img {
+            max-width: 40px;
+            max-height: 40px;
+            border-radius: 4px;
+        }
+
+        .file-preview span {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-preview button {
+            background: none;
+            border: none;
+            color: #dc2626;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .file-preview button:hover {
+            color: #b91c1c;
+        }
+
+        .message-content img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            margin: 0.5rem 0;
+            object-fit: contain;
+        }
+
         @media (max-width: 767px) {
             body {
                 font-size: 0.9rem;
@@ -981,6 +1048,15 @@
                 padding: 0.75rem;
                 max-height: auto;
             }
+
+            .file-preview {
+                max-width: 150px;
+            }
+
+            .file-preview img {
+                max-width: 30px;
+                max-height: 30px;
+            }
         }
 
         @keyframes bounce {
@@ -1059,11 +1135,12 @@
                             <label for="fileInput" class="btn btn-primary" style="border-radius: 999px; padding: 0.6rem 1rem;">
                                 <i class="bi bi-paperclip"></i>
                             </label>
-                            <input type="file" id="fileInput" accept=".txt,.js,.py,.html,.css,.png,.jpg,.jpeg" aria-label="Upload file" />
+                            <input type="file" id="fileInput" accept=".txt,.js,.py,.html,.css,.png,.jpg,.jpeg" multiple aria-label="Upload file" />
                             <button type="submit" class="btn btn-primary" aria-label="Send message">
                                 <i class="bi bi-send"></i>
                             </button>
                         </form>
+                        <div class="file-preview-container" id="filePreviewContainer" style="display: none;"></div>
                     </div>
                 </div>
             </div>
@@ -1109,6 +1186,7 @@
     let sidebarState = localStorage.getItem("sidebarState") === "open" || false;
     let isToggling = false;
     const QUESTION_LIMIT = 5;
+    let selectedFiles = [];
 
     const WELCOME_MESSAGE = `# Welcome to **YHA - AI**!
 
@@ -1141,7 +1219,47 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
         });
     }
 
-    // File Upload
+    // File Upload and Preview
+    function updateFilePreview() {
+        const previewContainer = document.getElementById("filePreviewContainer");
+        previewContainer.innerHTML = "";
+        if (selectedFiles.length === 0) {
+            previewContainer.style.display = "none";
+            return;
+        }
+
+        previewContainer.style.display = "flex";
+        selectedFiles.forEach((file, index) => {
+            const previewDiv = document.createElement("div");
+            previewDiv.className = "file-preview";
+            previewDiv.dataset.index = index;
+
+            const iconOrImg = document.createElement("img");
+            if (file.type.startsWith("image/")) {
+                iconOrImg.src = URL.createObjectURL(file);
+            } else {
+                iconOrImg.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/%3E%3Cpolyline points='14 2 14 8 20 8'/%3E%3Cline x1='12' y1='18' x2='12' y2='12'/%3E%3Cline x1='9' y1='15' x2='15' y2='15'/%3E%3C/svg%3E";
+            }
+            previewDiv.appendChild(iconOrImg);
+
+            const fileNameSpan = document.createElement("span");
+            fileNameSpan.textContent = file.name;
+            previewDiv.appendChild(fileNameSpan);
+
+            const removeBtn = document.createElement("button");
+            removeBtn.innerHTML = '<i class="bi bi-x"></i>';
+            removeBtn.setAttribute("aria-label", `Remove ${file.name}`);
+            removeBtn.onclick = () => {
+                selectedFiles.splice(index, 1);
+                document.getElementById("fileInput").value = "";
+                updateFilePreview();
+            };
+            previewDiv.appendChild(removeBtn);
+
+            previewContainer.appendChild(previewDiv);
+        });
+    }
+
     async function handleFileUpload(file) {
         if (!auth.currentUser) {
             showToast("Please log in to upload files.");
@@ -1183,6 +1301,8 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
         document.getElementById('userInput').disabled = false;
         document.querySelector('.input-area button[type="submit"]').disabled = false;
         document.getElementById('authMessage').innerText = '';
+        selectedFiles = [];
+        updateFilePreview();
         updateSidebarState();
         displayWelcomeMessage();
     }
@@ -1265,7 +1385,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
     }
 
     // Message Formatting
-    function formatMessage(content) {
+    function formatMessage(content, fileData = null) {
         let parts = [];
         let lastIndex = 0;
         const codeBlockRegex = /```(\w+)?\n([\s\S]*?)\n```/g;
@@ -1311,12 +1431,16 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             }
         });
 
+        if (fileData && fileData.type === "image" && fileData.url) {
+            formattedContent += `<img src="${fileData.url}" alt="${escapeHtml(fileData.name)}" />`;
+        }
+
         formattedContent = formattedContent.replace(/<p>\s*<\/p>/g, '');
         return formattedContent;
     }
 
     // Add Message to Chat
-    function addMessage(content, isUser, isLoading = false) {
+    function addMessage(content, isUser, isLoading = false, fileData = null) {
         const chatBox = document.getElementById("chatBox");
         const welcomeMessage = document.getElementById("welcomeMessage");
         if (welcomeMessage) welcomeMessage.remove();
@@ -1332,7 +1456,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
 
         const textDiv = document.createElement("div");
         textDiv.className = "message-text";
-        textDiv.innerHTML = isLoading ? `<span class="loader"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span> AI is typing...` : formatMessage(content);
+        textDiv.innerHTML = isLoading ? `<span class="loader"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span> AI is typing...` : formatMessage(content, fileData);
 
         contentDiv.appendChild(textDiv);
 
@@ -1350,7 +1474,8 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
             copyBtn.setAttribute("aria-label", "Copy message");
             copyBtn.onclick = () => {
-                navigator.clipboard.writeText(content).then(() => {
+                const textToCopy = fileData && fileData.type === "image" ? `${content}\nImage: ${fileData.url}` : content;
+                navigator.clipboard.writeText(textToCopy).then(() => {
                     copyBtn.innerHTML = '<i class="bi bi-clipboard-check"></i>';
                     showToast("Text copied to clipboard!");
                     setTimeout(() => copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>', 2000);
@@ -1399,6 +1524,8 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
         const chatBox = document.getElementById("chatBox");
         chatBox.innerHTML = `<div class="welcome-message" id="welcomeMessage">${formatMessage(WELCOME_MESSAGE)}</div>`;
         document.getElementById("userInput").value = "";
+        selectedFiles = [];
+        updateFilePreview();
         document.getElementById("userInput").focus();
     }
 
@@ -1487,6 +1614,8 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
     async function newChat() {
         console.log("Starting new chat");
         currentConversationId = null;
+        selectedFiles = [];
+        updateFilePreview();
         updateChatHistory();
         displayWelcomeMessage();
         if (window.innerWidth <= 767) debouncedToggleSidebar();
@@ -1496,13 +1625,18 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
     async function loadConversation(id) {
         console.log("Loading conversation:", id);
         currentConversationId = id;
+        selectedFiles = [];
+        updateFilePreview();
         const chatBox = document.getElementById("chatBox");
         chatBox.innerHTML = "";
         const conversation = conversations.find(conv => conv.id === id);
         if (conversation && conversation.messages) {
             conversation.messages.forEach(msg => {
-                const content = msg.parts.find(part => part.text)?.text || "";
-                addMessage(content, msg.role === "user");
+                const textPart = msg.parts.find(part => part.text);
+                const filePart = msg.parts.find(part => part.inlineData);
+                const content = textPart ? textPart.text : "";
+                const fileData = filePart ? { type: "image", url: msg.fileUrl, name: msg.fileName } : null;
+                addMessage(content, msg.role === "user", false, fileData);
             });
         } else {
             displayWelcomeMessage();
@@ -1520,6 +1654,8 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             }
             conversations = [];
             currentConversationId = null;
+            selectedFiles = [];
+            updateFilePreview();
             updateChatHistory();
             displayWelcomeMessage();
             showToast("Chat history cleared!");
@@ -1533,9 +1669,8 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
     async function sendMessage(event) {
         event.preventDefault();
         const userInput = document.getElementById("userInput").value.trim();
-        const fileInput = document.getElementById("fileInput");
         const sendBtn = document.querySelector('.input-area button[type="submit"]');
-        if (!userInput && !fileInput.files.length) return;
+        if (!userInput && selectedFiles.length === 0) return;
 
         if (!auth.currentUser) {
             let questionCount = parseInt(localStorage.getItem('questionCount') || '0');
@@ -1552,16 +1687,18 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
 
         sendBtn.disabled = true;
         let messageContent = userInput;
-        let fileData = null;
+        let fileDataList = [];
 
-        if (fileInput.files.length) {
-            const file = fileInput.files[0];
-            fileData = await handleFileUpload(file);
-            if (fileData) {
-                if (fileData.type === "text") {
-                    messageContent += `\n\nUploaded file (${fileData.name}):\n\`\`\`\n${fileData.content}\n\`\`\``;
-                } else if (fileData.type === "image") {
-                    messageContent += `\n\nUploaded image (${fileData.name}): [Image URL](${fileData.url})`;
+        if (selectedFiles.length > 0) {
+            for (const file of selectedFiles) {
+                const fileData = await handleFileUpload(file);
+                if (fileData) {
+                    fileDataList.push(fileData);
+                    if (fileData.type === "text") {
+                        messageContent += `\n\nUploaded file (${fileData.name}):\n\`\`\`\n${fileData.content}\n\`\`\``;
+                    } else if (fileData.type === "image") {
+                        messageContent += `\n\nUploaded image (${fileData.name})`;
+                    }
                 }
             }
         }
@@ -1569,7 +1706,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
         if (!currentConversationId) {
             const newConv = {
                 id: push(ref(db, 'conversations/' + (auth.currentUser?.uid || 'guest'))).key,
-                title: userInput.slice(0, 30) + (userInput.length > 30 ? "..." : ""),
+                title: userInput.slice(0, 30) + (userInput.length > 30 ? "..." : "") || "New Chat",
                 messages: []
             };
             conversations.push(newConv);
@@ -1580,20 +1717,33 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             updateChatHistory();
         }
 
-        addMessage(messageContent, true);
         const currentConversation = conversations.find(conv => conv.id === currentConversationId);
         const messageParts = [{ text: messageContent }];
-        if (fileData && fileData.type === "image") {
-            messageParts.push({ inlineData: fileData.inlineData });
+
+        if (fileDataList.length > 0) {
+            const fileData = fileDataList[0]; // Handle one file for simplicity
+            if (fileData.type === "image") {
+                messageParts.push({ inlineData: fileData.inlineData });
+            }
+            addMessage(messageContent, true, false, fileData);
+            currentConversation.messages.push({
+                role: "user",
+                parts: messageParts,
+                fileUrl: fileData.url,
+                fileName: fileData.name
+            });
+        } else {
+            addMessage(messageContent, true);
+            currentConversation.messages.push({ role: "user", parts: messageParts });
         }
-        currentConversation.messages.push({ role: "user", parts: messageParts });
 
         if (auth.currentUser) {
             await set(ref(db, 'conversations/' + auth.currentUser.uid + '/' + currentConversationId), currentConversation);
         }
 
         document.getElementById("userInput").value = "";
-        fileInput.value = "";
+        selectedFiles = [];
+        updateFilePreview();
         document.getElementById("userInput").focus();
         const loadingMessage = addMessage("", false, true);
 
@@ -1684,6 +1834,8 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             await signOut(auth);
             conversations = [];
             currentConversationId = null;
+            selectedFiles = [];
+            updateFilePreview();
             localStorage.removeItem('questionCount');
             showAuth();
             showToast("Logged out successfully!");
@@ -1747,9 +1899,12 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
 
         document.getElementById('messageForm').addEventListener('submit', sendMessage);
 
-        document.getElementById('fileInput').addEventListener('change', () => {
-            if (document.getElementById('fileInput').files.length) {
-                showToast("File selected. Send the message to upload.");
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length) {
+                selectedFiles = files;
+                updateFilePreview();
+                showToast(`${files.length} file(s) selected.`);
             }
         });
 
@@ -1794,6 +1949,8 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
         } else {
             conversations = [];
             currentConversationId = null;
+            selectedFiles = [];
+            updateFilePreview();
             showAuth();
             const questionCount = parseInt(localStorage.getItem('questionCount') || '0');
             if (questionCount >= QUESTION_LIMIT) {

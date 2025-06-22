@@ -1187,6 +1187,7 @@
     let isToggling = false;
     const QUESTION_LIMIT = 5;
     let selectedFiles = [];
+    const MESSAGE_DISPLAY_DELAY = 2000; // 2 seconds delay for message display
 
     const WELCOME_MESSAGE = `# Welcome to **YHA - AI**!
 
@@ -1266,7 +1267,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             return null;
         }
         if (file.size > 1 * 1024 * 1024) {
-            showToast("File size must be less than 1MB.");
+            showToast(`File "${file.name}" is too large (over 1MB). Please upload a smaller file.`);
             return null;
         }
         try {
@@ -1280,14 +1281,14 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
             } else {
                 const text = await file.text();
                 if (text.length > 100000) {
-                    showToast("Text file too large. Please upload a smaller file.");
+                    showToast(`Text file "${file.name}" is too large. Please upload a smaller file.`);
                     return null;
                 }
                 return { type: "text", content: text, url, name: file.name };
             }
         } catch (error) {
             console.error("File upload error:", error);
-            showToast("Failed to upload file.");
+            showToast(`Failed to upload file "${file.name}".`);
             return null;
         }
     }
@@ -1456,7 +1457,7 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
 
         const textDiv = document.createElement("div");
         textDiv.className = "message-text";
-        textDiv.innerHTML = isLoading ? `<span class="loader"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span> AI is typing...` : formatMessage(content, fileData);
+        textDiv.innerHTML = isLoading ? `<span class="loader"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span> ${content || "AI is typing..."}` : formatMessage(content, fileData);
 
         contentDiv.appendChild(textDiv);
 
@@ -1689,6 +1690,14 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
         let messageContent = userInput;
         let fileDataList = [];
 
+        // Show uploading message if files are selected
+        let uploadingMessage = null;
+        if (selectedFiles.length > 0) {
+            showToast("File(s) uploading, please wait...");
+            uploadingMessage = addMessage("Uploading file(s)...", true, true);
+        }
+
+        // Upload files immediately
         if (selectedFiles.length > 0) {
             for (const file of selectedFiles) {
                 const fileData = await handleFileUpload(file);
@@ -1720,111 +1729,119 @@ Ready to dive into the world of AI and computer science? I'm here to help you ex
         const currentConversation = conversations.find(conv => conv.id === currentConversationId);
         const messageParts = [{ text: messageContent }];
 
-        if (fileDataList.length > 0) {
-            const fileData = fileDataList[0]; // Handle one file for simplicity
-            if (fileData.type === "image") {
-                messageParts.push({ inlineData: fileData.inlineData });
+        // Delay the display of the user message
+        setTimeout(async () => {
+            if (uploadingMessage) {
+                uploadingMessage.remove();
             }
-            addMessage(messageContent, true, false, fileData);
-            currentConversation.messages.push({
-                role: "user",
-                parts: messageParts,
-                fileUrl: fileData.url,
-                fileName: fileData.name
-            });
-        } else {
-            addMessage(messageContent, true);
-            currentConversation.messages.push({ role: "user", parts: messageParts });
-        }
 
-        if (auth.currentUser) {
-            await set(ref(db, 'conversations/' + auth.currentUser.uid + '/' + currentConversationId), currentConversation);
-        }
+            if (fileDataList.length > 0) {
+                const fileData = fileDataList[0]; // Handle one file for simplicity
+                if (fileData.type === "image") {
+                    messageParts.push({ inlineData: fileData.inlineData });
+                }
+                addMessage(messageContent, true, false, fileData);
+                currentConversation.messages.push({
+                    role: "user",
+                    parts: messageParts,
+                    fileUrl: fileData.url,
+                    fileName: fileData.name
+                });
+            } else {
+                addMessage(messageContent, true);
+                currentConversation.messages.push({ role: "user", parts: messageParts });
+            }
+
+            if (auth.currentUser) {
+                await set(ref(db, 'conversations/' + auth.currentUser.uid + '/' + currentConversationId), currentConversation);
+            }
+
+            const loadingMessage = addMessage("", false, true);
+
+            try {
+                const validatedMessages = currentConversation.messages.map(msg => ({
+                    role: msg.role,
+                    parts: msg.parts.map(part => {
+                        if (part.text) return { text: part.text };
+                        if (part.inlineData) return { inlineData: part.inlineData };
+                        return part;
+                    })
+                }));
+
+                console.log("Sending API request with payload:", JSON.stringify({ contents: validatedMessages }, null, 2));
+
+                const response = await fetch(`${API_URL}?key=AIzaSyDxOoWvmAjmiB286W5A_q7ZyE04pWSuwKE`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ contents: validatedMessages }),
+                });
+
+                if (!response.ok) {
+                    const errorMessages = {
+                        400: "Invalid request. Please check the file format or content.",
+                        403: "Access denied. Please check your API configuration.",
+                        429: "Too many requests. Please wait and try again.",
+                        default: `HTTP ${response.status}: ${response.statusText}`
+                    };
+                    throw new Error(errorMessages[response.status] || errorMessages.default);
+                }
+
+                const data = await response.json();
+                if (data.error) throw new Error(data.error.message);
+
+                const botResponse = data.candidates[0].content.parts[0].text;
+                loadingMessage.querySelector(".message-text").innerHTML = formatMessage(botResponse);
+                loadingMessage.classList.remove("loading");
+                const timestamp = document.createElement("div");
+                timestamp.className = "timestamp";
+                timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                loadingMessage.querySelector(".message-content").appendChild(timestamp);
+
+                const buttonGroup = document.createElement("div");
+                buttonGroup.className = "button-group";
+
+                const copyBtn = document.createElement("button");
+                copyBtn.className = "copy-btn";
+                copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
+                copyBtn.setAttribute("aria-label", "Copy message");
+                copyBtn.onclick = () => {
+                    navigator.clipboard.writeText(botResponse).then(() => {
+                        copyBtn.innerHTML = '<i class="bi bi-clipboard-check"></i>';
+                        showToast("Text copied to clipboard!");
+                        setTimeout(() => copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>', 2000);
+                    }).catch(() => {
+                        showToast("Failed to copy text!");
+                    });
+                };
+                buttonGroup.appendChild(copyBtn);
+
+                loadingMessage.querySelector(".message-content").appendChild(buttonGroup);
+
+                currentConversation.messages.push({ role: "model", parts: [{ text: botResponse }] });
+                if (auth.currentUser) {
+                    await set(ref(db, 'conversations/' + auth.currentUser.uid + '/' + currentConversationId), currentConversation);
+                }
+                requestAnimationFrame(() => {
+                    loadingMessage.querySelectorAll('pre code').forEach(code => Prism.highlightElement(code));
+                });
+            } catch (error) {
+                console.error("Error sending message:", error);
+                let errorMessage = `Error: ${error.message || "Unable to get response. Please try again."}`;
+                loadingMessage.querySelector(".message-text").textContent = errorMessage;
+                loadingMessage.classList.remove("loading");
+                const timestamp = document.createElement("div");
+                timestamp.className = "timestamp";
+                timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                loadingMessage.querySelector(".message-content").appendChild(timestamp);
+            } finally {
+                sendBtn.disabled = false;
+            }
+        }, MESSAGE_DISPLAY_DELAY);
 
         document.getElementById("userInput").value = "";
         selectedFiles = [];
         updateFilePreview();
         document.getElementById("userInput").focus();
-        const loadingMessage = addMessage("", false, true);
-
-        try {
-            const validatedMessages = currentConversation.messages.map(msg => ({
-                role: msg.role,
-                parts: msg.parts.map(part => {
-                    if (part.text) return { text: part.text };
-                    if (part.inlineData) return { inlineData: part.inlineData };
-                    return part;
-                })
-            }));
-
-            console.log("Sending API request with payload:", JSON.stringify({ contents: validatedMessages }, null, 2));
-
-            const response = await fetch(`${API_URL}?key=AIzaSyDxOoWvmAjmiB286W5A_q7ZyE04pWSuwKE`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contents: validatedMessages }),
-            });
-
-            if (!response.ok) {
-                const errorMessages = {
-                    400: "Invalid request. Please check the file format or content.",
-                    403: "Access denied. Please check your API configuration.",
-                    429: "Too many requests. Please wait and try again.",
-                    default: `HTTP ${response.status}: ${response.statusText}`
-                };
-                throw new Error(errorMessages[response.status] || errorMessages.default);
-            }
-
-            const data = await response.json();
-            if (data.error) throw new Error(data.error.message);
-
-            const botResponse = data.candidates[0].content.parts[0].text;
-            loadingMessage.querySelector(".message-text").innerHTML = formatMessage(botResponse);
-            loadingMessage.classList.remove("loading");
-            const timestamp = document.createElement("div");
-            timestamp.className = "timestamp";
-            timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            loadingMessage.querySelector(".message-content").appendChild(timestamp);
-
-            const buttonGroup = document.createElement("div");
-            buttonGroup.className = "button-group";
-
-            const copyBtn = document.createElement("button");
-            copyBtn.className = "copy-btn";
-            copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
-            copyBtn.setAttribute("aria-label", "Copy message");
-            copyBtn.onclick = () => {
-                navigator.clipboard.writeText(botResponse).then(() => {
-                    copyBtn.innerHTML = '<i class="bi bi-clipboard-check"></i>';
-                    showToast("Text copied to clipboard!");
-                    setTimeout(() => copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>', 2000);
-                }).catch(() => {
-                    showToast("Failed to copy text!");
-                });
-            };
-            buttonGroup.appendChild(copyBtn);
-
-            loadingMessage.querySelector(".message-content").appendChild(buttonGroup);
-
-            currentConversation.messages.push({ role: "model", parts: [{ text: botResponse }] });
-            if (auth.currentUser) {
-                await set(ref(db, 'conversations/' + auth.currentUser.uid + '/' + currentConversationId), currentConversation);
-            }
-            requestAnimationFrame(() => {
-                loadingMessage.querySelectorAll('pre code').forEach(code => Prism.highlightElement(code));
-            });
-        } catch (error) {
-            console.error("Error sending message:", error);
-            let errorMessage = `Error: ${error.message || "Unable to get response. Please try again."}`;
-            loadingMessage.querySelector(".message-text").textContent = errorMessage;
-            loadingMessage.classList.remove("loading");
-            const timestamp = document.createElement("div");
-            timestamp.className = "timestamp";
-            timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            loadingMessage.querySelector(".message-content").appendChild(timestamp);
-        } finally {
-            sendBtn.disabled = false;
-        }
     }
 
     // Authentication Handling

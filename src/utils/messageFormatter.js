@@ -51,15 +51,56 @@ const escapeHtml = (text) => {
 
 // Global function for copying code (attached to window for onclick handlers)
 window.copyCode = (code) => {
-  navigator.clipboard
-    .writeText(code)
-    .then(() => {
+  // Try modern clipboard API first, fallback to legacy method
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard
+      .writeText(code)
+      .then(() => {
+        const event = new CustomEvent("showToast", {
+          detail: { message: "Code copied to clipboard!" },
+        });
+        window.dispatchEvent(event);
+      })
+      .catch((err) => {
+        console.error("Failed to copy code: ", err);
+        fallbackCopyCode(code);
+      });
+  } else {
+    fallbackCopyCode(code);
+  }
+};
+
+const fallbackCopyCode = (code) => {
+  const textarea = document.createElement("textarea");
+  textarea.value = code;
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  textarea.style.top = "-9999px";
+  document.body.appendChild(textarea);
+
+  try {
+    textarea.select();
+    textarea.setSelectionRange(0, 99999);
+    const successful = document.execCommand("copy");
+
+    if (successful) {
       const event = new CustomEvent("showToast", {
         detail: { message: "Code copied to clipboard!" },
       });
       window.dispatchEvent(event);
-    })
-    .catch((err) => {
-      console.error("Failed to copy code: ", err);
+    } else {
+      const event = new CustomEvent("showToast", {
+        detail: { message: "Could not copy code" },
+      });
+      window.dispatchEvent(event);
+    }
+  } catch (err) {
+    console.error("Fallback copy failed: ", err);
+    const event = new CustomEvent("showToast", {
+      detail: { message: "Copy not supported" },
     });
+    window.dispatchEvent(event);
+  } finally {
+    document.body.removeChild(textarea);
+  }
 };

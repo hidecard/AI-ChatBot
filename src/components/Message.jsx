@@ -17,18 +17,60 @@ const Message = ({ message, isUser }) => {
   }, [message]);
 
   const handleCopy = (text) => {
-    navigator.clipboard
-      .writeText(text)
-      .then(() => {
-        // Show toast notification
+    // Try modern clipboard API first, fallback to legacy method
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard
+        .writeText(text)
+        .then(() => {
+          const event = new CustomEvent("showToast", {
+            detail: { message: "Text copied to clipboard!" },
+          });
+          window.dispatchEvent(event);
+        })
+        .catch((err) => {
+          console.error("Failed to copy text: ", err);
+          fallbackCopy(text);
+        });
+    } else {
+      fallbackCopy(text);
+    }
+  };
+
+  const fallbackCopy = (text) => {
+    // Create a temporary textarea element
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    textarea.style.top = "-9999px";
+    document.body.appendChild(textarea);
+
+    try {
+      textarea.select();
+      textarea.setSelectionRange(0, 99999); // For mobile devices
+      const successful = document.execCommand("copy");
+
+      if (successful) {
         const event = new CustomEvent("showToast", {
           detail: { message: "Text copied to clipboard!" },
         });
         window.dispatchEvent(event);
-      })
-      .catch((err) => {
-        console.error("Failed to copy text: ", err);
+      } else {
+        console.warn("Copy command was unsuccessful");
+        const event = new CustomEvent("showToast", {
+          detail: { message: "Could not copy text" },
+        });
+        window.dispatchEvent(event);
+      }
+    } catch (err) {
+      console.error("Fallback copy failed: ", err);
+      const event = new CustomEvent("showToast", {
+        detail: { message: "Copy not supported in this environment" },
       });
+      window.dispatchEvent(event);
+    } finally {
+      document.body.removeChild(textarea);
+    }
   };
 
   return (

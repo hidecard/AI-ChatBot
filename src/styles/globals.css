@@ -613,36 +613,61 @@ body.dark-mode {
 }
 
 .message-content .content {
-  line-height: 1.6;
+  line-height: 1.7;
+  font-size: 0.95rem;
 }
 
 .message-content h1,
 .message-content h2,
 .message-content h3 {
-  margin: 0.5rem 0;
+  margin: 1.5rem 0 1rem 0;
   color: inherit;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.message-content h1 {
+  font-size: 1.5rem;
+}
+
+.message-content h2 {
+  font-size: 1.25rem;
+}
+
+.message-content h3 {
+  font-size: 1.125rem;
 }
 
 .message-content p {
-  margin: 0.5rem 0;
+  margin: 1rem 0;
 }
 
 .message-content ul,
 .message-content ol {
-  margin: 0.5rem 0;
+  margin: 1rem 0;
   padding-left: 1.5rem;
 }
 
 .message-content li {
-  margin: 0.25rem 0;
+  margin: 0.5rem 0;
+  line-height: 1.6;
 }
 
 .message-content strong {
   font-weight: 600;
+  color: inherit;
 }
 
 .message-content em {
   font-style: italic;
+}
+
+.message.user-message .content {
+  color: white;
+}
+
+.message.user-message strong {
+  color: white;
 }
 
 .inline-code {
@@ -965,14 +990,14 @@ body.dark-mode {
 
 /* Input Area */
 .input-area {
-  padding: 1.5rem;
-  border-top: 1px solid var(--border-color);
-  background: white;
+  padding: 1.5rem 2rem 2rem;
+  border-top: 1px solid #e5e7eb;
+  background: #ffffff;
 }
 
 .dark-mode .input-area {
   border-top-color: #374151;
-  background: var(--dark-bg);
+  background: #1a1a1a;
 }
 
 .input-area form {
@@ -983,57 +1008,75 @@ body.dark-mode {
 
 .input-area input[type="text"] {
   flex: 1;
-  padding: 0.75rem;
-  border: 1px solid var(--border-color);
-  border-radius: 24px;
-  background: white;
+  padding: 0.875rem 1rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 12px;
+  background: #ffffff;
   color: var(--text-color);
-  font-size: 1rem;
+  font-size: 0.95rem;
   outline: none;
   transition: all 0.2s ease;
   resize: none;
   min-height: 48px;
   max-height: 120px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .input-area input[type="text"]:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 .dark-mode .input-area input[type="text"] {
-  background: var(--dark-secondary);
-  border-color: #374151;
+  background: #2d2d2d;
+  border-color: #4b5563;
   color: var(--dark-text);
+}
+
+.dark-mode .input-area input[type="text"]:focus {
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.1);
 }
 
 .file-upload-btn,
 .input-area button[type="submit"] {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
   border: none;
-  background: var(--primary-color);
+  background: #6366f1;
   color: white;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .file-upload-btn:hover,
 .input-area button[type="submit"]:hover:not(:disabled) {
-  background: var(--accent-color);
+  background: #4f46e5;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
 .input-area button[type="submit"]:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
   transform: none;
+  background: #9ca3af;
+}
+
+.dark-mode .file-upload-btn,
+.dark-mode .input-area button[type="submit"] {
+  background: #818cf8;
+}
+
+.dark-mode .file-upload-btn:hover,
+.dark-mode .input-area button[type="submit"]:hover:not(:disabled) {
+  background: #6366f1;
 }
 
 /* File Preview */

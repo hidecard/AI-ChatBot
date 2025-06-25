@@ -38,6 +38,110 @@ The UI of **YHA - AI** is designed for both functionality and aesthetics:
 | **Theming**           | CSS Variables (Dark/Light Mode)            | Dynamic theme switching for enhanced user experience |
 | **Code Blocks**       | Prism.js                                  | Syntax highlighting for code blocks             |          |
 
+
+
+## Installation
+To set up the YHA - AI project locally, follow these steps:
+
+### Prerequisites
+- A modern web browser (Chrome, Firefox, Safari, etc.).
+- A Firebase project with Authentication, Realtime Database, and Storage enabled.
+- A Gemini API key for AI functionality.
+
+### Steps
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/hidecard/AI-ChatBot.git
+   cd AI-ChatBot 
+   ```
+
+2. **Set Up Firebase**:
+   - Create a Firebase project at [Firebase Console](https://console.firebase.google.com/).
+   - Enable Email/Password Authentication in the Authentication section.
+   - Set up the Realtime Database and Storage with appropriate rules.
+   - Update the `firebaseConfig` object in the `<script>` section of `index.html` with your Firebase project credentials:
+     ```javascript
+     const firebaseConfig = {
+         apiKey: "YOUR_API_KEY",
+         authDomain: "YOUR_AUTH_DOMAIN",
+         databaseURL: "YOUR_DATABASE_URL",
+         projectId: "YOUR_PROJECT_ID",
+         storageBucket: "YOUR_STORAGE_BUCKET",
+         messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+         appId: "YOUR_APP_ID",
+         measurementId: "YOUR_MEASUREMENT_ID"
+     };
+     ```
+
+3. **Set Up Gemini API**:
+   - Obtain a Gemini API key from the [Google Cloud Console](https://cloud.google.com/).
+   - Update the `API_URL` in the `<script>` section of `index.html` with your API key:
+     ```javascript
+     const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=YOUR_GEMINI_API_KEY`;
+     ```
+
+4. **Serve the Application**:
+   - Since this is a static web application, you can serve it using a local server. For example, using Python:
+     ```bash
+     python -m http.server 8000
+     ```
+   - Open your browser and navigate to `http://localhost:8000`.
+
+5. **Optional: Deploy to Hosting**:
+   - Deploy to Firebase Hosting or any static hosting service (e.g., GitHub Pages, Netlify).
+   - For Firebase Hosting:
+     ```bash
+     npm install -g firebase-tools
+     firebase login
+     firebase init hosting
+     firebase deploy
+     ```
+
+## Usage
+1. **Access the Application**:
+   - Open the application in a web browser.
+   - If not logged in, you'll see the authentication page. Register or log in using an email and password.
+
+2. **Chat Interface**:
+   - Start a new chat by clicking the "New Chat" button in the sidebar.
+   - Type a message or upload a file (text or image) and submit to receive an AI response.
+   - Use the sidebar to view, search, or edit past conversations.
+   - Toggle between light and dark modes using the theme toggle button.
+
+3. **File Uploads**:
+   - Upload text or image files via the file input button in the chat input area.
+   - Preview uploaded files and remove them if needed.
+
+4. **Chat History**:
+   - View all conversations in the sidebar.
+   - Search conversations using the search bar.
+   - Edit conversation titles by clicking the pencil icon next to a chat.
+
+5. **Logout**:
+   - Click the "Logout" button in the sidebar to sign out and clear local data.
+
+## Project Structure
+```plaintext
+yha-ai/
+├── index.html        # Main HTML file with UI and client-side logic
+├── README.md        # Project documentation (this file)
+└── assets/          # (Optional) Directory for additional assets (e.g., images, custom styles)
+```
+
+## Contributing
+Contributions are welcome! To contribute:
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature/your-feature`).
+3. Make your changes and commit (`git commit -m "Add your feature"`).
+4. Push to the branch (`git push origin feature/your-feature`).
+5. Open a Pull Request with a detailed description of your changes.
+
+Please ensure your code follows the existing style and includes appropriate comments.
+
+## License
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+
 ## Contact Details
 
 For questions, feedback, or issues, please:

@@ -13,17 +13,19 @@ export const formatMessage = (text) => {
     .replace(/\*(.*?)\*/g, "<em>$1</em>")
 
     // Code blocks
-    .replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+    .replace(/```(\w+)?\n?([\s\S]*?)```/g, (match, lang, code) => {
       const language = lang || "javascript";
+      const escapedCode = escapeHtml(code.trim());
+      const codeId = "code_" + Math.random().toString(36).substr(2, 9);
       return `
-        <div class="code-block">
+        <div class="code-block" data-language="${language}">
           <div class="code-header">
-            <span class="language">${language}</span>
-            <button class="copy-btn" onclick="copyCode('${code.replace(/'/g, "\\'")}')">
+            <span class="language">${language.toUpperCase()}</span>
+            <button class="copy-btn" onclick="copyCodeBlock('${codeId}')">
               <i class="bi bi-clipboard"></i>
             </button>
           </div>
-          <pre class="line-numbers"><code class="language-${language}">${escapeHtml(code.trim())}</code></pre>
+          <pre class="line-numbers"><code id="${codeId}" class="language-${language}">${escapedCode}</code></pre>
         </div>
       `;
     })
@@ -49,9 +51,34 @@ const escapeHtml = (text) => {
   return div.innerHTML;
 };
 
-// Global function for copying code (attached to window for onclick handlers)
-window.copyCode = (code) => {
+// Global function for copying code blocks
+window.copyCodeBlock = (codeId) => {
+  const codeElement = document.getElementById(codeId);
+  if (!codeElement) return;
+
+  const code = codeElement.textContent || codeElement.innerText;
+
   // Try modern clipboard API first, fallback to legacy method
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard
+      .writeText(code)
+      .then(() => {
+        const event = new CustomEvent("showToast", {
+          detail: { message: "Code copied to clipboard!" },
+        });
+        window.dispatchEvent(event);
+      })
+      .catch((err) => {
+        console.error("Failed to copy code: ", err);
+        fallbackCopyCode(code);
+      });
+  } else {
+    fallbackCopyCode(code);
+  }
+};
+
+// Keep the old function for backwards compatibility
+window.copyCode = (code) => {
   if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard
       .writeText(code)

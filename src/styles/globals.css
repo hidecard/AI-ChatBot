@@ -700,6 +700,7 @@ body.dark-mode {
   background: var(--code-bg);
   border: 1px solid var(--border-color);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
 .dark-mode .code-block {
@@ -727,6 +728,7 @@ body.dark-mode {
   color: var(--primary-color);
   text-transform: uppercase;
   font-size: 0.75rem;
+  letter-spacing: 0.5px;
 }
 
 .code-block .copy-btn {
@@ -738,26 +740,108 @@ body.dark-mode {
   font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .code-block .copy-btn:hover {
   background: var(--accent-color);
+  transform: translateY(-1px);
 }
 
 .code-block pre {
   margin: 0;
-  padding: 1rem;
+  padding: 1rem !important;
   overflow-x: auto;
-  background: transparent;
+  background: transparent !important;
   font-family: "Fira Code", monospace;
   font-size: 0.9rem;
-  line-height: 1.5;
+  line-height: 1.6;
+  border: none;
 }
 
 .code-block code {
-  background: transparent;
+  background: transparent !important;
   color: inherit;
-  font-family: inherit;
+  font-family: "Fira Code", monospace !important;
+  font-size: 0.9rem !important;
+  text-shadow: none;
+}
+
+/* Prism.js theme overrides */
+.dark-mode .code-block pre[class*="language-"] {
+  background: var(--code-dark-bg) !important;
+}
+
+.dark-mode .code-block code[class*="language-"] {
+  color: var(--code-dark-text) !important;
+}
+
+/* Line numbers */
+.line-numbers .line-numbers-rows {
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  padding-right: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.dark-mode .line-numbers .line-numbers-rows {
+  border-right-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Ensure proper syntax highlighting colors in dark mode */
+.dark-mode .token.comment,
+.dark-mode .token.prolog,
+.dark-mode .token.doctype,
+.dark-mode .token.cdata {
+  color: #6272a4;
+}
+
+.dark-mode .token.punctuation {
+  color: #f8f8f2;
+}
+
+.dark-mode .token.property,
+.dark-mode .token.tag,
+.dark-mode .token.boolean,
+.dark-mode .token.number,
+.dark-mode .token.constant,
+.dark-mode .token.symbol {
+  color: #bd93f9;
+}
+
+.dark-mode .token.selector,
+.dark-mode .token.attr-name,
+.dark-mode .token.string,
+.dark-mode .token.char,
+.dark-mode .token.builtin,
+.dark-mode .token.inserted {
+  color: #50fa7b;
+}
+
+.dark-mode .token.operator,
+.dark-mode .token.entity,
+.dark-mode .token.url,
+.dark-mode .language-css .token.string,
+.dark-mode .style .token.string {
+  color: #ff79c6;
+}
+
+.dark-mode .token.atrule,
+.dark-mode .token.attr-value,
+.dark-mode .token.keyword {
+  color: #ff79c6;
+}
+
+.dark-mode .token.function,
+.dark-mode .token.class-name {
+  color: #ffb86c;
+}
+
+.dark-mode .token.regex,
+.dark-mode .token.important,
+.dark-mode .token.variable {
+  color: #ff5555;
 }
 
 /* Input Area */

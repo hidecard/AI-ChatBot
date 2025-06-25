@@ -6,13 +6,36 @@ const Message = ({ message, isUser }) => {
 
   useEffect(() => {
     // Highlight code blocks after message is rendered
-    if (messageRef.current) {
-      const codeBlocks = messageRef.current.querySelectorAll("pre code");
-      codeBlocks.forEach((block) => {
-        if (window.Prism && window.Prism.highlightElement) {
-          window.Prism.highlightElement(block);
-        }
-      });
+    if (messageRef.current && window.Prism) {
+      // Small delay to ensure DOM is fully rendered
+      setTimeout(() => {
+        const codeBlocks = messageRef.current.querySelectorAll("pre code");
+        codeBlocks.forEach((block) => {
+          // Remove existing highlighting
+          block.removeAttribute("class");
+          block.className = block.dataset.language
+            ? `language-${block.dataset.language}`
+            : "language-javascript";
+
+          if (window.Prism.highlightElement) {
+            window.Prism.highlightElement(block);
+          }
+        });
+
+        // Also highlight any code blocks with proper class
+        const allCodeBlocks = messageRef.current.querySelectorAll(
+          ".code-block pre code",
+        );
+        allCodeBlocks.forEach((block) => {
+          if (
+            window.Prism.highlightElement &&
+            !block.classList.contains("prism-highlighted")
+          ) {
+            window.Prism.highlightElement(block);
+            block.classList.add("prism-highlighted");
+          }
+        });
+      }, 100);
     }
   }, [message]);
 

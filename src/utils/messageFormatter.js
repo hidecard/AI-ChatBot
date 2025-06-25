@@ -51,18 +51,26 @@ const escapeHtml = (text) => {
   return div.innerHTML;
 };
 
-// Global function for copying code blocks
+// Global function for copying code blocks with improved UX
 window.copyCodeBlock = (codeId) => {
   const codeElement = document.getElementById(codeId);
   if (!codeElement) return;
 
   const code = codeElement.textContent || codeElement.innerText;
+  const copyBtn = codeElement.closest(".code-block").querySelector(".copy-btn");
+
+  // Add copying state
+  if (copyBtn) {
+    copyBtn.classList.add("copying");
+    copyBtn.innerHTML = '<i class="bi bi-arrow-repeat"></i>';
+  }
 
   // Try modern clipboard API first, fallback to legacy method
   if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard
       .writeText(code)
       .then(() => {
+        showCopySuccess(copyBtn);
         const event = new CustomEvent("showToast", {
           detail: { message: "Code copied to clipboard!" },
         });
@@ -70,10 +78,67 @@ window.copyCodeBlock = (codeId) => {
       })
       .catch((err) => {
         console.error("Failed to copy code: ", err);
-        fallbackCopyCode(code);
+        fallbackCopyCodeWithBtn(code, copyBtn);
       });
   } else {
-    fallbackCopyCode(code);
+    fallbackCopyCodeWithBtn(code, copyBtn);
+  }
+};
+
+const showCopySuccess = (copyBtn) => {
+  if (copyBtn) {
+    copyBtn.classList.remove("copying");
+    copyBtn.classList.add("copied");
+    copyBtn.innerHTML = '<i class="bi bi-check"></i>';
+
+    setTimeout(() => {
+      copyBtn.classList.remove("copied");
+      copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
+    }, 2000);
+  }
+};
+
+const fallbackCopyCodeWithBtn = (code, copyBtn) => {
+  const textarea = document.createElement("textarea");
+  textarea.value = code;
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  textarea.style.top = "-9999px";
+  document.body.appendChild(textarea);
+
+  try {
+    textarea.select();
+    textarea.setSelectionRange(0, 99999);
+    const successful = document.execCommand("copy");
+
+    if (successful) {
+      showCopySuccess(copyBtn);
+      const event = new CustomEvent("showToast", {
+        detail: { message: "Code copied to clipboard!" },
+      });
+      window.dispatchEvent(event);
+    } else {
+      if (copyBtn) {
+        copyBtn.classList.remove("copying");
+        copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
+      }
+      const event = new CustomEvent("showToast", {
+        detail: { message: "Could not copy code" },
+      });
+      window.dispatchEvent(event);
+    }
+  } catch (err) {
+    console.error("Fallback copy failed: ", err);
+    if (copyBtn) {
+      copyBtn.classList.remove("copying");
+      copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
+    }
+    const event = new CustomEvent("showToast", {
+      detail: { message: "Copy not supported" },
+    });
+    window.dispatchEvent(event);
+  } finally {
+    document.body.removeChild(textarea);
   }
 };
 

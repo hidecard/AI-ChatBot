@@ -6,10 +6,12 @@ const Message = ({ message, isUser }) => {
 
   useEffect(() => {
     // Highlight code blocks after message is rendered
-    if (messageRef.current && window.Prism) {
+    if (messageRef.current) {
       const codeBlocks = messageRef.current.querySelectorAll("pre code");
       codeBlocks.forEach((block) => {
-        window.Prism.highlightElement(block);
+        if (window.Prism && window.Prism.highlightElement) {
+          window.Prism.highlightElement(block);
+        }
       });
     }
   }, [message]);

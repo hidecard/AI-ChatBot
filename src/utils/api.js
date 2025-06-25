@@ -1,6 +1,6 @@
 // Replace with your actual Gemini API key from Google AI Studio
 // Get one at: https://ai.google.dev/
-const API_KEY = "your-gemini-api-key"; // Replace this with your actual API key
+const API_KEY = "AIzaSyDxOoWvmAjmiB286W5A_q7ZyE04pWSuwKE";
 const API_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
 

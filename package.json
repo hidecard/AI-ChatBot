@@ -1,0 +1,22 @@
+{
+  "name": "yha-ai",
+  "version": "1.0.0",
+  "description": "YHA - AI is a sleek, modern, and responsive AI-powered chat application",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx http-server . -p 3000 -c-1 --cors",
+    "start": "npx http-server . -p 3000 -c-1 --cors",
+    "build": "echo 'This is a static project, no build needed'"
+  },
+  "keywords": [
+    "ai",
+    "chat",
+    "static",
+    "html"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

@@ -499,20 +499,25 @@ body.dark-mode {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: white;
+  background: #ffffff;
 }
 
 .dark-mode .chat-container {
-  background: var(--dark-bg);
+  background: #1a1a1a;
 }
 
 .chat-box {
   flex: 1;
   overflow-y: auto;
-  padding: 1.5rem;
+  padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0;
+  background: #ffffff;
+}
+
+.dark-mode .chat-box {
+  background: #1a1a1a;
 }
 
 .chat-box::-webkit-scrollbar {
@@ -531,53 +536,80 @@ body.dark-mode {
 /* Messages */
 .message {
   display: flex;
-  gap: 0.75rem;
+  gap: 1rem;
   align-items: flex-start;
   animation: slideIn 0.3s ease;
   max-width: 100%;
+  margin-bottom: 1.5rem;
 }
 
 .message.user-message {
   flex-direction: row-reverse;
+  justify-content: flex-start;
 }
 
 .message.user-message .message-content {
-  background: var(--primary-color);
+  background: #007aff;
   color: white;
   border-radius: 18px 18px 4px 18px;
+  margin-left: 3rem;
 }
 
 .message.ai-message .message-content {
-  background: #f8fafc;
+  background: transparent;
   color: var(--text-color);
-  border-radius: 18px 18px 18px 4px;
+  border-radius: 0;
+  border: none;
+  padding: 0;
+  margin-right: 3rem;
 }
 
 .dark-mode .message.ai-message .message-content {
-  background: var(--dark-secondary);
+  background: transparent;
   color: var(--dark-text);
 }
 
 .avatar {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: var(--primary-color);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
+  font-size: 1rem;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.message.user-message .avatar {
+  background: #007aff;
+}
+
+.message.ai-message .avatar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .message-content {
   max-width: 70%;
-  padding: 0.75rem 1.25rem;
+  padding: 0.875rem 1rem;
   position: relative;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  line-height: 1.6;
+}
+
+.message.user-message .message-content {
+  max-width: 80%;
+  padding: 0.875rem 1rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.message.ai-message .message-content {
+  max-width: 100%;
+  padding: 0;
+  background: transparent;
 }
 
 .message-content .content {
@@ -694,18 +726,19 @@ body.dark-mode {
 
 /* Code Blocks */
 .code-block {
-  margin: 1rem 0;
-  border-radius: 12px;
+  margin: 1.5rem 0;
+  border-radius: 8px;
   overflow: hidden;
-  background: var(--code-bg);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   position: relative;
+  font-family: "Fira Code", "Monaco", "Cascadia Code", "Roboto Mono", monospace;
 }
 
 .dark-mode .code-block {
-  background: var(--code-dark-bg);
-  border-color: #374151;
+  background: #1e1e1e;
+  border-color: #3c3c3c;
 }
 
 .code-header {
@@ -713,60 +746,83 @@ body.dark-mode {
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1rem;
-  background: rgba(0, 0, 0, 0.05);
-  border-bottom: 1px solid var(--border-color);
+  background: #f1f3f4;
+  border-bottom: 1px solid #e9ecef;
   font-size: 0.85rem;
 }
 
 .dark-mode .code-header {
-  background: rgba(255, 255, 255, 0.05);
-  border-bottom-color: #374151;
+  background: #2d2d2d;
+  border-bottom-color: #3c3c3c;
 }
 
 .language {
   font-weight: 600;
-  color: var(--primary-color);
+  color: #6b7280;
   text-transform: uppercase;
   font-size: 0.75rem;
   letter-spacing: 0.5px;
 }
 
+.dark-mode .language {
+  color: #9ca3af;
+}
+
 .code-block .copy-btn {
-  background: var(--primary-color);
+  background: #6b7280;
   color: white;
   border: none;
-  padding: 0.25rem 0.5rem;
+  padding: 0.375rem 0.75rem;
   border-radius: 6px;
   font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.375rem;
+  opacity: 0.7;
+}
+
+.code-block:hover .copy-btn {
+  opacity: 1;
 }
 
 .code-block .copy-btn:hover {
-  background: var(--accent-color);
+  background: #4b5563;
   transform: translateY(-1px);
 }
 
+.dark-mode .code-block .copy-btn {
+  background: #4b5563;
+}
+
+.dark-mode .code-block .copy-btn:hover {
+  background: #374151;
+}
+
 .code-block pre {
-  margin: 0;
-  padding: 1rem !important;
+  margin: 0 !important;
+  padding: 1.25rem !important;
   overflow-x: auto;
   background: transparent !important;
-  font-family: "Fira Code", monospace;
-  font-size: 0.9rem;
-  line-height: 1.6;
+  font-family: "Fira Code", "Monaco", "Cascadia Code", "Roboto Mono", monospace;
+  font-size: 0.875rem;
+  line-height: 1.7;
   border: none;
+  color: #374151;
+}
+
+.dark-mode .code-block pre {
+  color: #d1d5db;
 }
 
 .code-block code {
   background: transparent !important;
   color: inherit;
-  font-family: "Fira Code", monospace !important;
-  font-size: 0.9rem !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
   text-shadow: none;
+  font-weight: 400;
 }
 
 /* Prism.js theme overrides */
@@ -789,16 +845,76 @@ body.dark-mode {
   border-right-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Ensure proper syntax highlighting colors in dark mode */
+/* Modern syntax highlighting colors - Light mode */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #6a737d;
+  font-style: italic;
+}
+
+.token.punctuation {
+  color: #586069;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  color: #005cc5;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: #032f62;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: #d73a49;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: #d73a49;
+  font-weight: 500;
+}
+
+.token.function,
+.token.class-name {
+  color: #6f42c1;
+  font-weight: 500;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+  color: #e36209;
+}
+
+/* Modern syntax highlighting colors - Dark mode */
 .dark-mode .token.comment,
 .dark-mode .token.prolog,
 .dark-mode .token.doctype,
 .dark-mode .token.cdata {
-  color: #6272a4;
+  color: #8b949e;
+  font-style: italic;
 }
 
 .dark-mode .token.punctuation {
-  color: #f8f8f2;
+  color: #c9d1d9;
 }
 
 .dark-mode .token.property,
@@ -806,8 +922,9 @@ body.dark-mode {
 .dark-mode .token.boolean,
 .dark-mode .token.number,
 .dark-mode .token.constant,
-.dark-mode .token.symbol {
-  color: #bd93f9;
+.dark-mode .token.symbol,
+.dark-mode .token.deleted {
+  color: #79c0ff;
 }
 
 .dark-mode .token.selector,
@@ -816,7 +933,7 @@ body.dark-mode {
 .dark-mode .token.char,
 .dark-mode .token.builtin,
 .dark-mode .token.inserted {
-  color: #50fa7b;
+  color: #a5d6ff;
 }
 
 .dark-mode .token.operator,
@@ -824,24 +941,26 @@ body.dark-mode {
 .dark-mode .token.url,
 .dark-mode .language-css .token.string,
 .dark-mode .style .token.string {
-  color: #ff79c6;
+  color: #ff7b72;
 }
 
 .dark-mode .token.atrule,
 .dark-mode .token.attr-value,
 .dark-mode .token.keyword {
-  color: #ff79c6;
+  color: #ff7b72;
+  font-weight: 500;
 }
 
 .dark-mode .token.function,
 .dark-mode .token.class-name {
-  color: #ffb86c;
+  color: #d2a8ff;
+  font-weight: 500;
 }
 
 .dark-mode .token.regex,
 .dark-mode .token.important,
 .dark-mode .token.variable {
-  color: #ff5555;
+  color: #ffa657;
 }
 
 /* Input Area */
@@ -1085,18 +1204,18 @@ body.dark-mode {
 /* Welcome Message */
 .welcome-message {
   max-width: none;
-  background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
+  background: transparent;
   color: var(--text-color);
-  border-radius: 18px;
-  padding: 2rem;
-  margin: 2rem 0;
-  border: 1px solid #fed7aa;
+  border-radius: 0;
+  padding: 0;
+  margin: 0 3rem 2rem 0;
+  border: none;
 }
 
 .dark-mode .welcome-message {
-  background: linear-gradient(135deg, var(--dark-secondary) 0%, #374151 100%);
+  background: transparent;
   color: var(--dark-text);
-  border-color: #374151;
+  border: none;
 }
 
 /* Animations */

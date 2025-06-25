@@ -6,21 +6,23 @@ import { showToast } from "../utils/toast";
 
 const QUESTION_LIMIT = 5;
 
-const WELCOME_MESSAGE = `# မင်္ဂလာပါ! YHA - AI မှ ကြိုဆိုပါတယ်! 🤖
+const WELCOME_MESSAGE = `# Welcome to YHA - AI! 🤖
 
-**YHA - AI** သည် သင့်အတွက် အဆင့်မြင့် AI အကူအညီပေးရေးစနစ်ဖြစ်ပါတယ်။ 
+**YHA - AI** is a sleek, modern, and responsive AI-powered chat application designed to empower users to explore AI, coding, and computer science concepts.
 
-## 🌟 အင်္ဂါရပ်များ:
-- **Programming & Coding** - ကုဒ်ရေးခြင်း၊ debugging၊ code review
-- **Myanmar Language Support** - မြန်မာဘာသာဖြင့် မေးမြန်းနိုင်ပါတယ်
-- **လေ့လာခြင်း** - Computer Science၊ AI၊ Technology များအကြောင်း
-- **ဖိုင်များ Upload** - Text files၊ ပုံများ ထည့်သွင်းနိုင်ပါတယ်
+## ✨ Features:
+- **Programming & Coding** - Code writing, debugging, and code review assistance
+- **Multi-language Support** - Ask questions in Myanmar or English
+- **Learning & Education** - Computer Science, AI, and Technology concepts
+- **File Upload Support** - Upload text files and images for analysis
+- **Dark/Light Theme** - Switch between themes for comfortable viewing
+- **Chat History** - Save and manage your conversation history
 
-## 🚀 စတင်ရန်:
-သင်လုပ်ချင်သော အရာကို မေးမြန်းပါ - programming၊ လေ့လာရေး၊ သို့မဟုတ် အခြားမည်သည့်အရာမဆို!
+## 🚀 Getting Started:
+Ask me anything about programming, technology, or any topic you're curious about!
 
 ---
-*ဥပမာ: "Python မှာ function ဘယ်လိုရေးရမလဲ?" သို့မဟုတ် "React component တစ်ခုပြုလုပ်ပေးပါ"*`;
+*Examples: "How do I write a function in Python?" or "Create a React component for me"*`;
 
 export const useChat = (user) => {
   const [conversations, setConversations] = useState([]);

@@ -17,11 +17,21 @@ export const formatMessage = (text) => {
       const language = lang || "javascript";
       const escapedCode = escapeHtml(code.trim());
       const codeId = "code_" + Math.random().toString(36).substr(2, 9);
+      const lineCount = code.trim().split("\n").length;
+      const isLongCode = lineCount > 20;
+
       return `
-        <div class="code-block" data-language="${language}">
+        <div class="code-block ${isLongCode ? "long-code" : ""}" data-language="${language}">
           <button class="copy-btn" onclick="copyCodeBlock('${codeId}')">
             <i class="bi bi-clipboard"></i>
           </button>
+          ${
+            isLongCode
+              ? `<button class="expand-btn" onclick="toggleCodeExpand('${codeId}')">
+            <i class="bi bi-arrows-angle-expand"></i>
+          </button>`
+              : ""
+          }
           <pre class="line-numbers"><code id="${codeId}" class="language-${language}">${escapedCode}</code></pre>
         </div>
       `;
@@ -136,6 +146,27 @@ const fallbackCopyCodeWithBtn = (code, copyBtn) => {
     window.dispatchEvent(event);
   } finally {
     document.body.removeChild(textarea);
+  }
+};
+
+// Global function for toggling code block expand/collapse
+window.toggleCodeExpand = (codeId) => {
+  const codeElement = document.getElementById(codeId);
+  if (!codeElement) return;
+
+  const codeBlock = codeElement.closest(".code-block");
+  const expandBtn = codeBlock.querySelector(".expand-btn");
+
+  if (codeBlock.classList.contains("expanded")) {
+    codeBlock.classList.remove("expanded");
+    if (expandBtn) {
+      expandBtn.innerHTML = '<i class="bi bi-arrows-angle-expand"></i>';
+    }
+  } else {
+    codeBlock.classList.add("expanded");
+    if (expandBtn) {
+      expandBtn.innerHTML = '<i class="bi bi-arrows-angle-contract"></i>';
+    }
   }
 };
 

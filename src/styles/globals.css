@@ -720,11 +720,43 @@ body.dark-mode {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   position: relative;
   font-family: "Fira Code", "Monaco", "Cascadia Code", "Roboto Mono", monospace;
+  max-height: 500px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 }
 
 .dark-mode .code-block {
   background: #1a1a1a;
   border-color: #333333;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+/* Custom scrollbar for code block container */
+.code-block::-webkit-scrollbar {
+  width: 8px;
+}
+
+.code-block::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.code-block::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.code-block::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .code-block::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.dark-mode .code-block::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .code-block .copy-btn {
@@ -778,6 +810,61 @@ body.dark-mode {
   background: var(--primary-color);
 }
 
+/* Expand button for long code blocks */
+.code-block .expand-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 3.5rem;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  opacity: 0;
+  transform: translateY(-2px);
+  z-index: 10;
+}
+
+.code-block:hover .expand-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.code-block .expand-btn:hover {
+  background: rgba(0, 0, 0, 0.85);
+  transform: scale(1.05);
+}
+
+.dark-mode .code-block .expand-btn {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .code-block .expand-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Long code block states */
+.code-block.long-code {
+  max-height: 400px;
+  transition: max-height 0.3s ease;
+}
+
+.code-block.long-code.expanded {
+  max-height: none;
+}
+
+.code-block.long-code.expanded .expand-btn i:before {
+  content: "\f615"; /* bi-arrows-angle-contract */
+}
+
 .code-block pre {
   margin: 0 !important;
   padding: 1.25rem !important;
@@ -788,11 +875,47 @@ body.dark-mode {
   line-height: 1.7;
   border: none;
   color: #1a1a1a;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 }
 
 .dark-mode .code-block pre {
   background: #1a1a1a !important;
   color: #e0e0e0;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+/* Custom scrollbar for webkit browsers (Chrome, Safari, Edge) */
+.code-block pre::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.code-block pre::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.code-block pre::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.code-block pre::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.code-block pre::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Dark mode scrollbar */
+.dark-mode .code-block pre::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.dark-mode .code-block pre::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .code-block code {

@@ -19,12 +19,9 @@ export const formatMessage = (text) => {
       const codeId = "code_" + Math.random().toString(36).substr(2, 9);
       return `
         <div class="code-block" data-language="${language}">
-          <div class="code-header">
-            <span class="language">${language.toUpperCase()}</span>
-            <button class="copy-btn" onclick="copyCodeBlock('${codeId}')">
-              <i class="bi bi-clipboard"></i>
-            </button>
-          </div>
+          <button class="copy-btn" onclick="copyCodeBlock('${codeId}')">
+            <i class="bi bi-clipboard"></i>
+          </button>
           <pre class="line-numbers"><code id="${codeId}" class="language-${language}">${escapedCode}</code></pre>
         </div>
       `;
